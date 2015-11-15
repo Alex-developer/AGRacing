@@ -1,0 +1,56 @@
+﻿<h3 class="text-center">Layout Manager</h3>
+
+<div class="icon-bar three-up">
+    <a href="#" class="item" id="edit" data-reveal-id="newmodal">
+        <img src="/images/edit.png" width="128" />
+        <label>New</label>
+    </a>
+    <a href="#" class="item" id="delete">
+        <img src="/images/delete.png" width="128" />
+        <label>Delete</label>
+    </a>
+    <a href="#" class="item" id="load">
+        <img src="/images/open.png" width="128" />
+        <label>Load</label>
+    </a>
+</div>
+
+<div id="newmodal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Create New Layout Group</h2>
+    <form>
+        <div class="row">
+            <div class="large-12 columns">
+                <label>
+                    Layout Group Name
+                    <input type="text" placeholder="Enter New layout Group Name" />
+                </label>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <a class="button right custom-close-reveal-modal">Cancel</a>
+        <a class="button right custom-close-reveal-modal">Create</a>
+    </div>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<div id="dashtree">
+    <ul id="dashtreepages">
+        <li>
+            <a href="#">Pad 1</a>
+            <ul>
+                <li><a href="#">Practice</a></li>
+                <li><a href="#">Qualifying</a></li>
+                <li><a href="#">Race</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">Pad 2</a>
+            <ul>
+                <li><a href="#">Practice</a></li>
+                <li><a href="#">Qualifying</a></li>
+                <li><a href="#">Race</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>

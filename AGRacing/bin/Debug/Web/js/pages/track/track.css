@@ -1,0 +1,22 @@
+﻿#trackpage {
+    height: 100%;
+}
+
+#trackmap {
+    width: 100%;
+    height: 100%;
+    float:left;
+    width: 70%;
+}
+
+    #trackmap #trackcanvaswrapper {
+        width: 100%;
+        height: 100%;
+    }
+
+#positions {
+    height: 100%;
+    width: 30%;
+    float: left;
+    background: #333333;
+}

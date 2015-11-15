@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0" />
+    <title>AGRacing Dashboard</title>
+    <link rel="stylesheet" href="/js/foundation/css/foundation.css" />
+    <link rel="stylesheet" href="/js/foundation/icons/foundation-icons.css" />
+    <link rel="stylesheet" href="/js/jquery-ui/jquery-ui.min.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,700' rel='stylesheet' type='text/css'>        
+    <link rel="stylesheet" href="/css/style.css">    
+</head>
+<body>
+
+    <div class="off-canvas-wrap" data-offcanvas>
+        <div class="inner-wrap">
+            <nav class="tab-bar">
+                <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                </section>
+
+                <section class="middle tab-bar-section">
+                    <div class="left headerpages">
+                        <ul>
+                            <li>
+                                <a href="#" data-page="home" class="loadpage item">
+                                    <img src="/js/pages/home/images/home.png" width="32" />
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="dash" class="loadpage item">
+                                    <img src="/js/pages/home/images/dashboard.png" width="32" />
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="time" class="loadpage item">
+                                    <img src="/js/pages/home/images/timing.png" width="32" />
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="track" class="loadpage item">
+                                    <img src="/js/pages/home/images/track.png" width="32" />
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="telemetry" class="loadpage item">
+                                    <img src="/js/pages/home/images/line.png" width="32" />
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="rightheader" class="right headerpages"></div>
+                    <h1 class="title" id="pagetitle"></h1>
+                </section>
+
+                <section class="right-small">
+                    <a class="right-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                </section>
+            </nav>
+
+            <aside class="left-off-canvas-menu" id="leftmenu">
+                <div id="leftmenu"></div>
+            </aside>
+
+            <aside class="right-off-canvas-menu" >
+                <div id="rightmenu"></div>
+            </aside>
+
+            <section class="main-section" id="content">
+
+            </section>
+
+            <a class="exit-off-canvas"></a>
+
+        </div>
+    </div>
+
+    <script src="/js/proto.js"></script>
+    <script src="/js/js-cookie/js.cookie.js"></script>
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/jquery-ui/jquery-ui.min.js"></script>
+    <script src="/js/jquery.ui.touch-punch/jquery.ui.touch-punch.min.js"></script>
+    <script src="/js/jquery-bigtext/jquery-bigtext.js"></script>
+    <script src="/js/jquery.doubletap/jquery.doubletap.js"></script>
+    <script src="/js/foundation/js/foundation.min.js"></script>
+    <script src="/js/requirejs/requirejs.js"></script>          
+    <script src="/js/protocol.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/settings.js"></script>
+    
+</body>
+</html>

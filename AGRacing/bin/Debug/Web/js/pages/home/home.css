@@ -1,0 +1,26 @@
+﻿#header {
+    height: 40vh;
+}
+
+#panels {
+    height: 50vh;
+    padding-top: 10vh;
+}
+
+    #panels .agpanel {
+        text-align: center;
+    }
+
+    #panels a, #panels a:visited {
+        text-decoration: none;
+        color: white;
+    }
+
+.icon-bar.home {
+    background: none;
+}
+
+    .icon-bar.home > * img {
+      height: 90px;
+      width: 90px;
+    }

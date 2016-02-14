@@ -14,6 +14,8 @@ Telemetry recoding and analysis
 
 A video of the Alpha track map can be found at  [https://www.youtube.com/watch?v=h2GRYcLq-vY](https://www.youtube.com/watch?v=h2GRYcLq-vY/)
 
+An early Alpha version of the dash running can be found at [https://www.youtube.com/watch?v=TkxlwAKm2Eo](https://www.youtube.com/watch?v=TkxlwAKm2Eo/)
+
 ![Dashboard](/Screenshots/home.png)
 
 An Example Dashboard - Note that this is just one of my testing dashboards you can customise it however you like

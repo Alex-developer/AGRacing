@@ -16,6 +16,7 @@ A video of the Alpha track map can be found at  [https://www.youtube.com/watch?v
 
 An early Alpha version of the dash running can be found at [https://www.youtube.com/watch?v=TkxlwAKm2Eo](https://www.youtube.com/watch?v=TkxlwAKm2Eo/)
 
+The PC side of the app will also support the hardware dash I am building for iRacing / pCars (Again all opensource software and hardware). A crappy video is available at [https://www.youtube.com/watch?v=6MKJRQLznj8](https://www.youtube.com/watch?v=6MKJRQLznj8/)
 ![Dashboard](/Screenshots/home.png)
 
 An Example Dashboard - Note that this is just one of my testing dashboards you can customise it however you like

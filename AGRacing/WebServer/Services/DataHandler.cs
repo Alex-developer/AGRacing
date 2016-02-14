@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Web;
+using AGRacing.WebServices;
 using AGRacing.GameData.GameState;
 using AGRacing.GameData.TrackData;
 using AGRacing.GameData.TrackData.TrackAnalysis;
@@ -23,15 +24,17 @@ namespace AGRacing.WebServices.Services
             return dataValid;
         }
 
-        public static bool Connected(GameState gameState)
+        public static GameInfo Connected(GameState gameState)
         {
-            bool connected = false;
+            GameInfo GameInformation = new GameInfo();
+            GameInformation.Connected = false;
 
             if (DataValid(gameState))
             {
-                connected = true;
+                GameInformation.Connected = true;
+                GameInformation.GameName = gameState.Game.GameName();
             }
-            return connected;
+            return GameInformation;
         }
 
         public static GameState AllData(GameState gameState)

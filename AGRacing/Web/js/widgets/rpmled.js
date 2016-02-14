@@ -4,6 +4,8 @@
     var _name = 'RPM LED';
     var _icon = '/images/widgets/ledrpm.png';
     var _labels = ['RPM'];
+    var _tab = 'Car';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _el = null;
     var _lastRPM = null;
@@ -21,7 +23,7 @@
     var _numberOfCircles = 12;
     var _colours = ['#a1fe00', '#beff00', '#dffe00', '#ffff00', '#fde100', '#febe04', '#ff9f00', '#ff7d07', '#ff5d00', '#ff3f00', '#ff1d00', '#fe0005'];
     var _messages = ['cardata', 'environmentdata'];
-    var _maxRPM = null;
+    var _maxRPM = 0;
     var _rpmPerCircle = 0;
     var _circles = null;
 
@@ -62,11 +64,23 @@
             
             switch (dataType) {
                 case 'environmentdata':
-                    _maxRPM = data.MaxRPM;
-                    _rpmPerCircle = _maxRPM / _numberOfCircles;
+                    if (data.MaxRPM > 0) {
+                        _maxRPM = data.MaxRPM;
+                        _rpmPerCircle = _maxRPM / _numberOfCircles;
+                    }
                     break;
 
                 case 'cardata':
+                    /**
+                    * Fudge for games that done have max RPM for the engine. We track the highest RPM
+                    * and recalculate the RPM per circle value.
+                    * TODO: What about bad downshifts where the RPM can go mental??
+                    **/
+                    if (data.RPM.toFixed(0) > parseInt(_maxRPM,10)) {
+                        _maxRPM = data.RPM.toFixed(0);
+                        _rpmPerCircle = _maxRPM / _numberOfCircles;
+                    }
+
                     if (_maxRPM !== null) {
                         if (_lastRPM !== data.RPM.toFixed(0)) {
                             var limit = data.RPM.toFixed(0) / _rpmPerCircle;
@@ -103,7 +117,8 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Car',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;

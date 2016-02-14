@@ -4,13 +4,18 @@
     var _name = 'Water';
     var _icon = '/images/widgets/gauge.png';
     var _labels = ['Water Temperature', 'Water Temp.', 'Water'];
+    var _tab = 'Car';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _initialised = false;
     var _el = null;
+    var _elId = null;
     var _lastWaterTemp = null;
+    var _editing = false;
 
     var _properties = {
         type: 'watertemp',
+        gaugestyle: 'digital',
         css: {
             left: 0,
             top: 0,
@@ -23,58 +28,86 @@
     ];
     var _messages = ['cardata'];
 
-    function init(element) {
-        _el = element;
+    function init(element, properties) {
+        if (element !== undefined) {
+            _el = element;
+        }
+        if (properties !== undefined) {
+            _properties = properties;
+        }
         require(_scripts, function () {
             buildUI();
         });
     }
 
-    function destroy() {
+    function destroy(leaveElement) {
+        if (leaveElement === undefined) {
+            leaveElement = false;
+        }
         _initialised = false;
-        kendo.destroy(jQuery(_el));
-        jQuery(_el).remove();
+        if (_properties.gaugestyle === 'digital') {
+        } else {
+            kendo.destroy(jQuery(_el));
+            jQuery(jQuery(_el)).html('');
+        }
+        if (!leaveElement) {
+            jQuery(_el).remove();
+        }
+        if (_editing && leaveElement === true) {
+            finishEdit();
+            startEdit();
+        }
     }
 
     function buildUI() {
-        jQuery(_el).kendoRadialGauge({
-            theme: "black",
+        if (_properties.gaugestyle === 'digital') {
+            _elId = AGRacingUI.getNextId();
 
-            pointer: {
-                value: 0,
-                color: "#ea7001"
-            },
+            jQuery(_el).css('font-family', _properties.fontfamily);
+            jQuery(_el).css('color', '#' + _properties.color);
+            var element = jQuery('<span>').css({ 'pointer-events': 'none' }).html('0').attr('id', _elId);
 
-            scale: {
-                startAngle: 180,
-                endAngle: 270,
+            jQuery(_el).append(element);
+            jQuery('#' + _elId).bigText({ horizontalAlign: _properties.align });
+        } else {
+            jQuery(_el).kendoRadialGauge({
+                theme: "black",
 
-                min: 40,
-                max: 120,
-
-                majorUnit: 30,
-                majorTicks: {
-                    width: 2,
-                    size: 6
+                pointer: {
+                    value: 0,
+                    color: "#ea7001"
                 },
 
-                minorUnit: 10,
-                minorTicks: {
-                    size: 3
-                },
+                scale: {
+                    startAngle: 180,
+                    endAngle: 270,
 
-                ranges: [{
-                    from: 110,
-                    to: 120,
-                    color: "#c20000"
-                }],
+                    min: 40,
+                    max: 120,
 
-                labels: {
-                    font: "9px Arial,Helvetica,sans-serif"
+                    majorUnit: 30,
+                    majorTicks: {
+                        width: 2,
+                        size: 6
+                    },
+
+                    minorUnit: 10,
+                    minorTicks: {
+                        size: 3
+                    },
+
+                    ranges: [{
+                        from: 110,
+                        to: 120,
+                        color: "#c20000"
+                    }],
+
+                    labels: {
+                        font: "9px Arial,Helvetica,sans-serif"
+                    }
                 }
-            }
-        });
-
+            });
+        }
         _initialised = true;
     }
 
@@ -82,26 +115,57 @@
         if (_initialised) {
             var waterTemp = data.WaterTemp.toFixed(2);
             if (_lastWaterTemp !== waterTemp) {
-                jQuery(_el).data('kendoRadialGauge').value(waterTemp);
+                if (_properties.gaugestyle === 'digital') {
+                    jQuery('#' + _elId).html(waterTemp);
+                } else {
+                    jQuery(_el).data('kendoRadialGauge').value(waterTemp);
+                }
                 _lastWaterTemp = waterTemp;
             }
         }
     }
 
     function startEdit() {
+        _editing = true;
+
         AGRacingWidgets.startEdit(_el, {
             resize: function () {
-                jQuery(_el).data('kendoRadialGauge').resize();
+                if (_properties.gaugestyle === 'digital') {
+                    jQuery('#' + _elId).bigText({ horizontalAlign: _properties.align });
+                } else {
+                    jQuery(_el).data('kendoRadialGauge').resize();
+                }
             },
             resizeStop: function () {
-                jQuery(_el).data('kendoRadialGauge').resize();
+                if (_properties.gaugestyle === 'digital') {
+                    jQuery('#' + _elId).bigText({ horizontalAlign: _properties.align });
+                } else {
+                    jQuery(_el).data('kendoRadialGauge').resize();
+                }
             }
-        }, 1);
+        });
+
     }
 
     function finishEdit() {
+        _editing = false;
         AGRacingWidgets.finishEdit(_el, _properties);
         return _properties;
+    }
+
+    function propertyChanged(property, value) {
+        switch (property) {
+            case 'text':
+                jQuery('#' + _elId).text(value);
+                jQuery('#' + _elId).bigText({ horizontalAlign: _properties.align });
+                _properties.text = value;
+                break;
+
+            case 'align':
+                jQuery('#' + _elId).bigText({ horizontalAlign: _properties.align });
+                _properties.align = value;
+                break;
+        }
     }
 
     return {
@@ -109,14 +173,15 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Car',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
         },
 
-        init: function (element) {
-            return init(element);
+        init: function (element, properties) {
+            return init(element, properties);
         },
 
         destroy: function () {
@@ -149,6 +214,13 @@
 
         setProperty: function (property, value) {
             _properties[property] = value;
+            propertyChanged(property, value);
+        },
+
+        setStyle: function (gaugestyle) {
+            destroy(true);
+            _properties.gaugestyle = gaugestyle;
+            init(_el, _properties);
         }
 
     }

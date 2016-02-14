@@ -11,7 +11,8 @@ namespace AGRacing.GameData.GameState
         public float SplitAhead { get; set; }
         public float SplitBehind { get; set; }
         public float Split { get; set; }
-        public float PersonalFastestLap { get; set; }
+        public string PersonalFastestLap { get; set; }
+        public string CurrentLapTime { get; set; }
         public float WorldlFastestLap { get; set; }
         public float[] CurrentSectors { get; set; }
         public float[] FastestSectors { get; set; }

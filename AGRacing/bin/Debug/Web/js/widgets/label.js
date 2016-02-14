@@ -4,6 +4,8 @@
     var _name = 'Label';
     var _icon = '/images/widgets/label.png';
     var _editorField = ['text'];
+    var _tab = 'Misc';
+    var _supports = 'all';
 
     var _el = null;
     var _elId = null;
@@ -86,7 +88,8 @@
         name: _name,
         icon: _icon,
         messages: _messages,
-        tab: 'Misc',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;

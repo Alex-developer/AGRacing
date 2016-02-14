@@ -15,7 +15,7 @@ var AGRacing = function () {
                     break;
 
                 case 'connected':
-                    AGRacingUI.connected();
+                    AGRacingUI.connected(message.data);
                     break;
 
                 case 'disconnected':

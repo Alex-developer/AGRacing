@@ -4,6 +4,8 @@
     var _name = 'Brake';
     var _icon = '/images/widgets/light.png';
     var _labels = ['Brake'];
+    var _tab = 'Car';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _initialised = false;
     var _el = null;
@@ -74,7 +76,8 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Car',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;

@@ -4,6 +4,8 @@
     var _name = 'Fuel';
     var _icon = '/images/widgets/gauge.png';
     var _labels = ['Fuel'];
+    var _tab = 'Car';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _initialised = false;
     var _el = null;
@@ -14,6 +16,7 @@
     var _properties = {
         type: 'fuel',
         gaugestyle: 'digital',
+        units: 'metric',
         css: {
             left: 0,
             top: 0,
@@ -114,8 +117,20 @@
 
     function updateUI(data) {
         if (_initialised) {
-            if (_lastFuel !== data.FuelLevel.toFixed(2)) {
+            if (_lastFuel !== data.FuelLevel) {
                 var fuel = data.FuelLevel * data.FuelCapacity;
+
+                switch (_properties.units) {
+                    case 'metric':
+                        break;
+                    case 'imperial':
+                        fuel = fuel * 0.219969;
+                        break;
+                    case 'us':
+                        fuel = fuel * 0.264172;
+                        break;
+                }
+
                 if (_properties.gaugestyle === 'digital') {
                     jQuery('#' + _elId).html(fuel.toFixed(1));
                     var fuel = jQuery('<span>').html('F').css('font-family', 'widgets').css('font-size', '0.6em');
@@ -123,7 +138,7 @@
                 } else {
                     jQuery(_el).data('kendoRadialGauge').value(fuel.toFixed(1));
                 }
-                _lastFuel = data.FuelLevel.toFixed(2);
+                _lastFuel = data.FuelLevel;
             }
         }
     }
@@ -161,7 +176,8 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Car',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
@@ -191,6 +207,10 @@
             destroy(true);
             _properties.gaugestyle = gaugestyle;
             init(_el, _properties);
+        },
+
+        setUnits : function (units) {
+            _properties.units = units;
         },
 
         getProperties: function () {

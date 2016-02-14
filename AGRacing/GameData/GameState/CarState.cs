@@ -12,6 +12,7 @@ namespace AGRacing.GameData.GameState
         public int Gear { get; set; }
         public float Speed { get; set; }
         public float RPM { get; set; }
+        public float RPMPercent { get; set; }
         public float FuelLevel { get; set; }
         public float FuelCapacity { get; set; }
         public float WaterTemp { get; set; }
@@ -20,7 +21,7 @@ namespace AGRacing.GameData.GameState
         public float[] TyreWear { get; set; }
         public float[] BrakeTemp { get; set; }
         public TrackPoint CarPosition { get; set; }
-        public float CurrentLapTime { get; set; }
+        public string CurrentLapTime { get; set; }
         public List<TrackPos> CarTrackPos { get; set; }
         public float Throttle { get; set; }
         public float Brake { get; set; }

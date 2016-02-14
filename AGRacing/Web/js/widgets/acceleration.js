@@ -4,6 +4,8 @@
     var _name = 'Acceleration';
     var _icon = '/images/widgets/gforce.png';
     var _labels = ['Acceleration','GForce'];
+    var _tab = 'Car';
+    var _supports = [];
 
     var _initialised = false;
     var _el = null;
@@ -194,7 +196,8 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Car',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;

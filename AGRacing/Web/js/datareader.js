@@ -55,7 +55,7 @@ var AGDATAREADER = function () {
         _usingWebSockets = false;
     }
 
-    _usingWebSockets = true;
+    _usingWebSockets = false;
 
     _pollTimer = setInterval(pollTimer, 1000);
 
@@ -68,10 +68,10 @@ var AGDATAREADER = function () {
         };
         _pollingWebsocket.onmessage = function (evt) {
             var data = JSON.parse(evt.data);
-            if (data === true) {
+            if (data.Connected === true) {
                 _dataValid = true;
                 if (_running) {
-                    sendMessage('data', 'connected', null);
+                    sendMessage('data', 'connected', data);
                     startDataReaders();
                 }
             } else {
@@ -104,13 +104,13 @@ var AGDATAREADER = function () {
                         if (result) {
                             _dataValid = true;
                             if (_running) {
-                                sendMessage('data', 'connected', null);
+                                sendMessage('connected', 'connected', result);
                                 startDataReaders();
                             }
                         } else {
                             _dataValid = false;
                             if (_running) {
-                                sendMessage('data', 'disconnected', null);
+                                sendMessage('disconnected', 'disconnected', null);
                                 stopDataReaders();
                             }
                         }
@@ -118,7 +118,7 @@ var AGDATAREADER = function () {
                     error: function () {
                         _dataValid = false;
                         if (_running) {
-                            sendMessage('data', 'disconnected', null);
+                            sendMessage('disconnected', 'disconnected', null);
                             stopDataReaders();
                         }
                     }
@@ -265,9 +265,9 @@ var AGDATAREADER = function () {
             };
 
         } else {
-            if (_timers.allData.dataFrequency > 0) {
-                _timers.allData.dataTimer = setInterval(function () { readData(_timers.allData); }, _timers.allData.dataFrequency);
-            }
+         //   if (_timers.allData.dataFrequency > 0) {
+         //       _timers.allData.dataTimer = setInterval(function () { readData(_timers.allData); }, _timers.allData.dataFrequency);
+         //   }
             if (_timers.carData.dataFrequency > 0) {
                 _timers.carData.dataTimer = setInterval(function () { readData(_timers.carData); }, _timers.carData.dataFrequency);
             }

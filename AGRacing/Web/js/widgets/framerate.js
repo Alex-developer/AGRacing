@@ -1,25 +1,30 @@
-﻿var AGRacingCURRENTLAPWidget = function () {
+﻿var AGRacingFRAMERATEWidget = function () {
     'use strict';
 
-    var _name = 'Current';
-    var _icon = '/images/widgets/stopwatch.png';
-    var _labels = ['Current Lap', 'Current'];
+    var _name = 'Frame Rate';
+    var _icon = '/images/widgets/gear.png';
+    var _labels = ['Frame Rate'];
+    var _tab = 'Environment';
+    var _supports = ['iRacing'];
 
     var _initialised = false;
     var _el = null;
     var _elId = null;
-    var _lastCurrentLap = null;
+    var _lastFPS = null;
 
     var _properties = {
-        type: 'currentlap',
+        type: 'framerate',
         css: {
             left: 0,
             top: 0,
-            width: 300,
-            height: 50
+            width: 50,
+            height: 50,
+            'font-family': 'ledfont',
+            'font-weight': 'bold',
+            color: 'white'
         }
     };
-    var _messages = ['cardata'];
+    var _messages = ['environmentdata'];
 
     function init(element) {
         _el = element;
@@ -32,8 +37,15 @@
     }
 
     function buildUI() {
+        _el.css('font-weight', _properties.fontweight);
+        _el.css('color', '#' + _properties.color);
         _elId = AGRacingUI.getNextId();
-        var element = jQuery('<span>').css({ 'pointer-events': 'none' }).html('--:--:--').attr('id', _elId);
+        var element = jQuery('<span>')
+            .css({
+                'pointer-events': 'none'
+            })
+            .text('0')
+            .attr('id', _elId);
 
         jQuery(_el).append(element);
         jQuery('#' + _elId).bigText();
@@ -42,9 +54,9 @@
 
     function updateUI(data) {
         if (_initialised) {
-            if (_lastCurrentLap !== data.CurrentLapTime) {
-                jQuery('#' + _elId).html(data.CurrentLapTime);
-                _lastCurrentLap = data.CurrentLapTime;
+            if (_lastFPS !== data.FPS) {
+                jQuery('#' + _elId).html(data.FPS);
+                _lastFPS = data.FPS;
             }
         }
     }
@@ -65,12 +77,21 @@
         return _properties;
     }
 
+    function propertyChanged(property, value) {
+        switch (property) {
+            case 'color':
+                _properties.color = value;
+                break;
+        }
+    }
+
     return {
         name: _name,
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Timing',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
@@ -114,4 +135,4 @@
 
     }
 };
-//# sourceURL=/js/widgets/currentlap.js
+//# sourceURL=/js/widgets/framerate.js

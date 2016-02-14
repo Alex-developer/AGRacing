@@ -4,6 +4,8 @@
     var _name = 'Ambient';
     var _icon = '/images/widgets/temperature.png';
     var _labels = ['Ambient Temperature', 'Ambient Temp.', 'Ambient'];
+    var _tab = 'Environment';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _initialised = false;
     var _el = null;
@@ -72,7 +74,8 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Environment',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;

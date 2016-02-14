@@ -1,21 +1,22 @@
-﻿var AGRacingCURRENTLAPWidget = function () {
+﻿var AGRacingENGINEWARNINGSWidget = function () {
     'use strict';
 
-    var _name = 'Current';
-    var _icon = '/images/widgets/stopwatch.png';
-    var _labels = ['Current Lap', 'Current'];
+    var _name = 'Engine Warnings';
+    var _icon = '/images/widgets/damage.png';
+    var _labels = ['Gear'];
+    var _tab = 'Car';
+    var _supports = ['iRacing'];
 
     var _initialised = false;
     var _el = null;
-    var _elId = null;
-    var _lastCurrentLap = null;
+    var _lastWarnings = 0;
 
     var _properties = {
-        type: 'currentlap',
+        type: 'enginewarnings',
         css: {
             left: 0,
             top: 0,
-            width: 300,
+            width: 100,
             height: 50
         }
     };
@@ -32,19 +33,34 @@
     }
 
     function buildUI() {
-        _elId = AGRacingUI.getNextId();
-        var element = jQuery('<span>').css({ 'pointer-events': 'none' }).html('--:--:--').attr('id', _elId);
-
-        jQuery(_el).append(element);
-        jQuery('#' + _elId).bigText();
+        _reLimiterId = AGRacingUI.getNextId();
+        jQuery(_el).html('<table style="width:100%;height:100%" cellpadding="0" cellspacing="0">\
+            <tr>\
+                <td><span class="success label">Water Temp</span></td>\
+                <td><span class="success label">Fuel Pressure</span></td>\
+                <td><span class="success label">Oil Pressure</span></td>\
+            </tr>\
+            <tr>\
+                <td><span class="success label">Engine Stalled</span></td>\
+                <td><span class="success label">Pit Limiter</span></td>\
+                <td><span id="' + _reLimiterId  + '" class="success label">Rev Limiter</span></td>\
+            </tr>\
+        </table>');
         _initialised = true;
     }
 
     function updateUI(data) {
         if (_initialised) {
-            if (_lastCurrentLap !== data.CurrentLapTime) {
-                jQuery('#' + _elId).html(data.CurrentLapTime);
-                _lastCurrentLap = data.CurrentLapTime;
+            if (_lastWarnings !== data.EngineDamage) {
+
+                if (data.EngineDamage & 32) {
+                    jQuery('#' + _reLimiterId).removeAttr('success');
+                    jQuery('#' + _reLimiterId).addAttr('alert');
+                } else {
+                    jQuery('#' + _reLimiterId).removeAttr('alert');
+                    jQuery('#' + _reLimiterId).addAttr('success');
+                }
+                _lastWarnings = data.EngineDamage;
             }
         }
     }
@@ -52,10 +68,8 @@
     function startEdit() {
         AGRacingWidgets.startEdit(_el, {
             resize: function () {
-                jQuery('#' + _elId).bigText();
             },
             resizeStop: function () {
-                jQuery('#' + _elId).bigText();
             }
         });
     }
@@ -65,12 +79,17 @@
         return _properties;
     }
 
+    function propertyChanged(property, value) {
+
+    }
+
     return {
         name: _name,
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Timing',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
@@ -114,4 +133,4 @@
 
     }
 };
-//# sourceURL=/js/widgets/currentlap.js
+//# sourceURL=/js/widgets/enginewarnings.js

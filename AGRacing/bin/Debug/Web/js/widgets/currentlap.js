@@ -43,11 +43,7 @@
     function updateUI(data) {
         if (_initialised) {
             if (_lastCurrentLap !== data.CurrentLapTime) {
-                if (data.CurrentLapTime !== -1) {
-                    jQuery('#' + _elId).html(data.CurrentLapTime.toHHMMSS(false));
-                } else {
-                    jQuery('#' + _elId).html('--:--:--');
-                }
+                jQuery('#' + _elId).html(data.CurrentLapTime);
                 _lastCurrentLap = data.CurrentLapTime;
             }
         }

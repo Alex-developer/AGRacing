@@ -141,7 +141,7 @@ namespace AGRacing.Games.ProjectCars
                 gameState.CarState.TyreTemp = gameData.MTyreTemp;
                 gameState.CarState.TyreWear = gameData.MTyreWear;
                 gameState.CarState.BrakeTemp = gameData.MBrakeTempCelsius;
-                gameState.CarState.CurrentLapTime = gameData.MCurrentTime;
+               // gameState.CarState.CurrentLapTime = gameData.MCurrentTime;
                 gameState.CarState.Throttle = gameData.MThrottle;
                 gameState.CarState.Brake = gameData.MBrake;
                 gameState.CarState.Wheel = gameData.MSteering;
@@ -208,7 +208,7 @@ namespace AGRacing.Games.ProjectCars
                 gameState.Timing.Split = gameData.MSplitTime;
                 gameState.Timing.SplitAhead = gameData.MSplitTimeAhead;
                 gameState.Timing.SplitBehind = gameData.MSplitTimeBehind;
-                gameState.Timing.PersonalFastestLap = gameData.MPersonalFastestLapTime;
+                //gameState.Timing.PersonalFastestLap = gameData.MPersonalFastestLapTime;
                 gameState.Timing.WorldlFastestLap = gameData.MWorldFastestLapTime;
 
                 if (gameState.Timing.WorldFastestSectors == null)

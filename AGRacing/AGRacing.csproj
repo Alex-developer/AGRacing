@@ -86,6 +86,7 @@
     <Compile Include="WebServer\Services\ConnectedService.cs" />
     <Compile Include="WebServer\Services\DataHandler.cs" />
     <Compile Include="WebServer\Services\EnvironmentDataService.cs" />
+    <Compile Include="WebServer\Services\GameInfo.cs" />
     <Compile Include="WebServer\Services\RecordingService.cs" />
     <Compile Include="WebServer\Services\TimingDataService.cs" />
     <Compile Include="WebServer\Services\TrackService.cs" />
@@ -553,10 +554,16 @@
     <Content Include="Web\js\widgets\carname.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Web\js\widgets\enginewarnings.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\js\widgets\flag.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\js\widgets\flagreason.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\framerate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\js\widgets\worldfastestsectors.js">

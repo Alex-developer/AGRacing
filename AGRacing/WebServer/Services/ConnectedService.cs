@@ -2,6 +2,7 @@
 using System.Linq;
 using WebSocketSharp;
 using AGRacing.GameData.GameState;
+using AGRacing.WebServices;
 using System.Web.Script.Serialization;
 
 namespace AGRacing.WebServices.Services
@@ -15,7 +16,7 @@ namespace AGRacing.WebServices.Services
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            bool result = DataHandler.Connected(GameState);
+            GameInfo result = DataHandler.Connected(GameState);
             json = new JavaScriptSerializer().Serialize(result);
             Send(json);
         }

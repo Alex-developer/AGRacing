@@ -11,6 +11,7 @@ var AGRacingUI = function () {
     var _currentPage = 1;
     var _id = 0;
     var _selectedWidget = null;
+    var _pageName = '';
 
     function initUI() {
         jQuery(document).foundation({
@@ -118,7 +119,8 @@ var AGRacingUI = function () {
                         debugger;
                     }).always(function (e) {
                         jQuery('#overlay').remove();
-                        jQuery('#pagetitle').text('AG Racing Dashboard - ' + capitaliseFirstLetter(page));
+                        _pageName = capitaliseFirstLetter(page);
+                        jQuery('#pagetitle').text('AG Racing Dashboard - ' + _pageName);
                         jQuery(document).foundation();
                     });
                 });
@@ -128,17 +130,18 @@ var AGRacingUI = function () {
 
     function notConnected() {
         if (jQuery('#overlay').length === 0) {
-       //    jQuery('body').append('<span id="overlay"><span>Waiting For Game ...</span></span>');
+           jQuery('body').append('<span id="overlay"><span>Waiting For Game ...</span></span>');
             if (AGRacingView.notConnected !== undefined) {
                 AGRacingView.notConnected();
             }
         }
     }
 
-    function connected() {
+    function connected(gameInfo) {
         jQuery('#overlay').remove();
+        jQuery('#pagetitle').text('AG Racing Dashboard (' + gameInfo.GameName + ') - ' + _pageName);
         if (AGRacingView.connected !== undefined) {
-            AGRacingView.connected();
+            AGRacingView.connected(gameInfo);
         }
     }
 
@@ -202,8 +205,8 @@ var AGRacingUI = function () {
             notConnected();
         },
 
-        connected : function() {
-            connected();
+        connected: function (gameInfo) {
+            connected(gameInfo);
         },
 
         getNextId: function () {

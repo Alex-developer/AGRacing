@@ -12,6 +12,7 @@ namespace AGRacing.GameData.GameState
         public string TrackVarient { get; set; }
         public float AmbientTemperature { get; set; }
         public float TrackTemperature { get; set; }
+        public double FPS { get; set;  } 
         public int Drivers { get; set; }
         public int Position { get; set; }
         public SessionType Session { get; set; }

@@ -42,19 +42,10 @@
 
     function updateUI(data) {
         if (_initialised) {
-            for (var i = 0; i < data.PlayerStates.length; i++) {
-                if (data.PlayerStates[i].IsMe === true) {
-                    if (_lastBestLap !== data.PlayerStates[i].FastestLapTime) {
-                        if (data.PlayerStates[i].FastestLapTime !== -1) {
-                            jQuery('#' + _elId).html(data.PlayerStates[i].FastestLapTime.toHHMMSS(false));
-                        } else {
-                            jQuery('#' + _elId).html('--:--:--');
-                        }
-                        break;
-                        _lastBestLap = data.PlayerStates[i].FastestLapTime;
-                    }
-                }
-            }
+            if (_lastBestLap !== data.PersonalFastestLap) {
+               jQuery('#' + _elId).html(data.PersonalFastestLap);
+               _lastBestLap = data.PersonalFastestLap;
+           }
         }
     }
 

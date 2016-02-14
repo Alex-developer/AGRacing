@@ -91,6 +91,28 @@
                     }
                 }
 
+                if (selectedWidget.getProperties().units !== undefined) {
+                    jQuery('.units').removeAttr('disabled');
+
+                    switch (selectedWidget.getProperties().units) {
+                        case 'metric':
+                            jQuery('#metric').attr('selected', 'selected');
+                            jQuery('#imperial').removeAttr('selected');
+                            jQuery('#us').removeAttr('selected');
+                            break;
+                        case 'imperial':
+                            jQuery('#metric').removeAttr('selected');
+                            jQuery('#imperial').attr('selected', 'selected');
+                            jQuery('#us').removeAttr('selected');
+                            break;
+                        case 'us':
+                            jQuery('#metric').removeAttr('selected');
+                            jQuery('#imperial').removeAttr('selected');
+                            jQuery('#us').attr('selected', 'selected');
+                            break;
+                    }
+                }
+
                 if (selectedWidget.getProperties().text !== undefined) {
                     jQuery('#widgetphrase').removeAttr('disabled');
                     jQuery('#widgettext').removeAttr('disabled');
@@ -111,6 +133,16 @@
                 selectedWidget.setStyle(style);
             }
         });
+
+        jQuery('#rightmenu').on('click', 'input[name=widgetunits]', function () {
+            var selectedWidget = AGRacingWidgets.getSelected();
+            if (selectedWidget.setUnits !== undefined) {
+                var option = jQuery("input[name=widgetunits]:checked");
+                var units = option.data('units');
+                selectedWidget.setUnits(units);
+            }
+        });
+        
 
         jQuery(document).on('click', '#content', function (e) {
             if (_editing) {
@@ -321,6 +353,35 @@
         });
     }
 
+    function setToolboxState(gameInfo) {
+        var gameName = gameInfo.GameName;
+
+        jQuery.each(AGRacingWidgets.getAvailableWidgets(), function (index, widget) {
+            var widgetClass = 'AGRacing' + widget.toUpperCase() + 'Widget';
+            var widgetController = new window[widgetClass]();
+            var id = '#' + widgetController.getProperties().type + 'widget';
+
+            if (widgetController.supports !== undefined) {
+                var supported = false;
+                if (widgetController.supports === 'all') {
+                    supported = true;
+                } else {
+                    if (widgetController.supports.indexOf(gameName) !== -1) {
+                        supported = true;
+                    }
+                }
+                if (supported) {
+                    jQuery(id).removeClass('disabled');
+                } else {
+                    jQuery(id).addClass('disabled');
+                }
+            } else {
+                jQuery(id).addClass('disabled');
+            }
+        });
+
+    }
+
     function startEditor() {
         jQuery('#rightheader .editorcontrol').removeClass('disabled');
         AGRacingWidgets.startEditing();
@@ -385,6 +446,10 @@
 
         destroy: function () {
             destroy();
+        },
+
+        setToolboxState: function (gameInfo) {
+            setToolboxState(gameInfo);
         }
     }
 

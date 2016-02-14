@@ -3,6 +3,8 @@
 
     var _name = 'Group';
     var _icon = '/images/widgets/blank.png';
+    var _tab = 'Misc';
+    var _supports = 'all';
 
     var _initialised = false;
     var _el = null;
@@ -50,7 +52,8 @@
         name: _name,
         icon: _icon,
         messages: _messages,
-        tab: 'Misc',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;

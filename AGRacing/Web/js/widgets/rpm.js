@@ -4,12 +4,15 @@
     var _name = 'RPM';
     var _icon = '/images/widgets/gauge.png';
     var _labels = ['RPM', 'Rev Counter'];
+    var _tab = 'Car';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _initialised = false;
     var _el = null;
     var _posEl = null;
     var _elId = null;
     var _lastRPM = null;
+    var _maxRPM = 9;
 
     var _editing = false;
     var _properties = {
@@ -86,7 +89,7 @@
                     endAngle: 180,
 
                     min: 0,
-                    max: 18,
+                    max: _maxRPM,
 
                     majorUnit: 1,
                     majorTicks: {
@@ -169,7 +172,8 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Car',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;

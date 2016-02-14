@@ -59,7 +59,8 @@
         AGRacingDashEditor.destroy();
     }
 
-    function connected() {
+    function connected(gameInfo) {
+        AGRacingDashEditor.setToolboxState(gameInfo);
     }
 
     function notConnected() {
@@ -87,8 +88,8 @@
             updateUI(message);
         },
 
-        connected: function () {
-            connected();
+        connected: function (gameInfo) {
+            connected(gameInfo);
         },
 
         notConnected: function () {

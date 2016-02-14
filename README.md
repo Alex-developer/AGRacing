@@ -14,4 +14,4 @@ Telemetry recoding and analysis
 
 ![Dashboard](/Screenshots/home.png)
 
-Once the code is a little more stable I will release it under a MIT Licence
+![Toolbox](/Screenshots/toolbox.png)

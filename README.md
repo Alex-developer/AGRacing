@@ -12,6 +12,8 @@ Contains numerous widgets to build dashboards
 Track Recorder, to allow track position to be shown on the dashboard
 Telemetry recoding and analysis
 
+A video of the Alpha track map can be found at  [https://www.youtube.com/watch?v=h2GRYcLq-vY](/https://www.youtube.com/watch?v=h2GRYcLq-vY/)
+
 ![Dashboard](/Screenshots/home.png)
 
 An Example Dashboard - Note that this is just one of my testing dashboards you can customise it however you like

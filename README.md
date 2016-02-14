@@ -12,7 +12,7 @@ Contains numerous widgets to build dashboards
 Track Recorder, to allow track position to be shown on the dashboard
 Telemetry recoding and analysis
 
-A video of the Alpha track map can be found at  [https://www.youtube.com/watch?v=h2GRYcLq-vY](/https://www.youtube.com/watch?v=h2GRYcLq-vY/)
+A video of the Alpha track map can be found at  [https://www.youtube.com/watch?v=h2GRYcLq-vY](https://www.youtube.com/watch?v=h2GRYcLq-vY/)
 
 ![Dashboard](/Screenshots/home.png)
 

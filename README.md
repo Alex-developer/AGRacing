@@ -14,4 +14,12 @@ Telemetry recoding and analysis
 
 ![Dashboard](/Screenshots/home.png)
 
+An Example Dashboard - Note that this is just one of my testing dashboards you can customise it however you like
+
 ![Toolbox](/Screenshots/toolbox.png)
+
+A library of tools, widgets, are provided. With a little Javascript knowledge you can add your own widgets as well. Full documentation will be provided once the code is a little more stable.
+
+![More](/Screenshots/more.png)
+
+Another example Dashboard

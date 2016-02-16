@@ -2,19 +2,19 @@
 using System.Linq;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using AGRacing.GameData.GameState;
+using AGRacing.GameData.Telemetry;
 using System.Web.Script.Serialization;
 
 namespace AGRacing.WebServices.Services
 {
     public class BaseService : WebSocketBehavior
     {
-        protected GameState GameState {get; set;}
+        protected TelemetryData Telemetry { get; set; }
         protected string json;
 
-        public BaseService(GameState gameState)
+        public BaseService(TelemetryData gameState)
         {
-            GameState = gameState;
+            Telemetry = gameState;
         }
     }
 }

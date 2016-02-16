@@ -15,14 +15,24 @@
         }).done(function (widgetList) {
             var lines = widgetList.split('\n');
             for (var i = 0; i < lines.length; i++) {
-                _availableWidgets.push(lines[i].replace('\r', ''));
+
+                var widgetPath = lines[i].replace('\r', '');
+                var bits = widgetPath.split('/');
+                var widgetName = bits[bits.length - 1];
+                var widgetClass = 'AGRacing' + widgetName.toUpperCase() + 'Widget';
+                var widgetInfo = {
+                    widgetPath: widgetPath,
+                    widgetName: widgetName,
+                    widgetClass: widgetClass
+                };
+                _availableWidgets.push(widgetInfo);
             }
         }).error(function (e) {
             _availableWidgets = [];
         }).always(function (e) {
             var requiredWidgets = [];
             jQuery.each(_availableWidgets, function (index, widget) {
-                requiredWidgets.push('widget/' + widget);
+                requiredWidgets.push('widget/' + widget.widgetPath);
             });
 
             require(requiredWidgets, function () {

@@ -1,9 +1,9 @@
 ﻿
 /*
- * Konva JavaScript Framework v0.9.5
+ * Konva JavaScript Framework v0.11.1
  * http://konvajs.github.io/
  * Licensed under the MIT or GPL Version 2 licenses.
- * Date: Tue May 05 2015
+ * Date: Sat Jan 16 2016
  *
  * Original work Copyright (C) 2011 - 2013 by Eric Rowell (KineticJS)
  * Modified work Copyright (C) 2014 - 2015 by Anton Lavrenov (Konva)
@@ -27,18 +27,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * @namespace Konva
- */
-/*jshint -W079, -W020*/
-var Konva = {};
-(function (root) {
+
+// runtime check for already included Konva
+(function () {
     'use strict';
+    /**
+     * @namespace Konva
+     */
+
     var PI_OVER_180 = Math.PI / 180;
 
-    Konva = {
+    var Konva = {
         // public
-        version: '0.9.5',
+        version: '0.11.1',
 
         // private
         stages: [],
@@ -114,9 +115,8 @@ var Konva = {};
             // drag and drop is not even possible
             if (dd) {
                 return dd.isDragging;
-            } else {
-                return false;
             }
+            return false;
         },
         /**
         * returns whether or not a drag and drop operation is ready, but may
@@ -131,9 +131,8 @@ var Konva = {};
             // drag and drop is not even possible
             if (dd) {
                 return !!dd.node;
-            } else {
-                return false;
             }
+            return false;
         },
         _addId: function (node, id) {
             if (id !== undefined) {
@@ -201,31 +200,25 @@ var Konva = {};
         UA: undefined
     };
 
-    Konva.UA = Konva._parseUA((root.navigator && root.navigator.userAgent) || '');
+    var global =
+        typeof window !== 'undefined' ? window :
+        typeof global !== 'undefined' ? global :
+        typeof WorkerGlobalScope !== 'undefined' ? self : {};
 
-})(this);
 
-// Uses Node, AMD or browser globals to create a module.
+    Konva.UA = Konva._parseUA((global.navigator && global.navigator.userAgent) || '');
 
-// If you want something that will work in other stricter CommonJS environments,
-// or if you need to create a circular dependency, see commonJsStrict.js
+    if (global.Konva) {
+        console.error(
+            'Konva instance is already exist in current eviroment. ' +
+            'Please use only one instance.'
+        );
+    }
+    global.Konva = Konva;
+    Konva.global = global;
 
-// Defines a module "returnExports" that depends another module called "b".
-// Note that the name of the module is implied by the file name. It is best
-// if the file name and the exported global have matching names.
 
-// If the 'b' module also uses this type of boilerplate, then
-// in the browser, it will create a global .b that is used below.
-
-// If you do not want to support the browser global path, then you
-// can remove the `root` use and the passing `this` as the first arg to
-// the top function.
-
-// if the module has no dependencies, the above pattern can be simplified to
-(function (root, factory) {
-    'use strict';
     if (typeof exports === 'object') {
-        var KonvaJS = factory();
         // runtime-check for browserify and nw.js (node-webkit)
         if (global.window && global.window.document) {
             Konva.document = global.window.document;
@@ -242,25 +235,18 @@ var Konva = {};
             Konva.window.Image = Canvas.Image;
             Konva._nodeCanvas = Canvas;
         }
-
-        Konva.root = root;
-        module.exports = KonvaJS;
+        module.exports = Konva;
         return;
     }
     else if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(factory);
+        define(function () {
+            return Konva;
+        });
     }
     Konva.document = document;
     Konva.window = window;
-    Konva.root = root;
-}(this, function () {
-    'use strict';
-    // Just return a value to define the module export.
-    // This example returns an object, but the module
-    // can return a function as the exported value.
-    return Konva;
-}));
+})();
 
 /*eslint-disable  eqeqeq, no-cond-assign, no-empty*/
 (function () {
@@ -794,11 +780,21 @@ var Konva = {};
                 key;
 
             for (key in obj) {
+                if (!obj.hasOwnProperty(key)) {
+                    continue;
+                }
                 if (this._isFunction(obj[key])) {
                     names.push(key);
                 }
             }
             return names.length > 0;
+        },
+        isValidSelector: function (selector) {
+            if (typeof selector !== 'string') {
+                return false;
+            }
+            var firstChar = selector[0];
+            return firstChar === '#' || firstChar === '.' || firstChar === firstChar.toUpperCase();
         },
         createCanvasElement: function () {
             var canvas = Konva.document.createElement('canvas');
@@ -1088,15 +1084,18 @@ var Konva = {};
         _capitalize: function (str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         },
-        error: function (str) {
+        throw: function (str) {
             throw new Error(KONVA_ERROR + str);
+        },
+        error: function (str) {
+            console.error(KONVA_ERROR + str);
         },
         warn: function (str) {
             /*
              * IE9 on Windows7 64bit will throw a JS error
              * if we don't use window.console in the conditional
              */
-            if (Konva.root.console && console.warn && Konva.showWarnings) {
+            if (Konva.global.console && console.warn && Konva.showWarnings) {
                 console.warn(KONVA_WARNING + str);
             }
         },
@@ -1161,6 +1160,86 @@ var Konva = {};
         },
         _removeLastLetter: function (str) {
             return str.substring(0, str.length - 1);
+        },
+        each: function (obj, func) {
+            for (var key in obj) {
+                func(key, obj[key]);
+            }
+        },
+        _getProjectionToSegment: function (x1, y1, x2, y2, x3, y3) {
+            var x, y, dist;
+
+            var pd2 = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+            if (pd2 == 0) {
+                x = x1;
+                y = y1;
+                dist = (x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2);
+            } else {
+                var u = ((x3 - x1) * (x2 - x1) + (y3 - y1) * (y2 - y1)) / pd2;
+                if (u < 0) {
+                    x = x1;
+                    y = y1;
+                    dist = (x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3);
+                } else if (u > 1.0) {
+                    x = x2;
+                    y = y2;
+                    dist = (x2 - x3) * (x2 - x3) + (y2 - y3) * (y2 - y3);
+                } else {
+                    x = x1 + u * (x2 - x1);
+                    y = y1 + u * (y2 - y1);
+                    dist = (x - x3) * (x - x3) + (y - y3) * (y - y3);
+                }
+            }
+            return [x, y, dist];
+        },
+        // line as array of points.
+        // line might be closed
+        _getProjectionToLine: function (pt, line, isClosed) {
+            var pc = Konva.Util.cloneObject(pt);
+            var dist = Number.MAX_VALUE;
+            line.forEach(function (p1, i) {
+                if (!isClosed && i === line.length - 1) {
+                    return;
+                }
+                var p2 = line[(i + 1) % line.length];
+                var proj = Konva.Util._getProjectionToSegment(p1.x, p1.y, p2.x, p2.y, pt.x, pt.y);
+                var px = proj[0], py = proj[1], pdist = proj[2];
+                if (pdist < dist) {
+                    pc.x = px;
+                    pc.y = py;
+                    dist = pdist;
+                }
+            });
+            return pc;
+        },
+        _prepareArrayForTween: function (startArray, endArray, isClosed) {
+            var n, start = [], end = [];
+            if (startArray.length > endArray.length) {
+                var temp = endArray;
+                endArray = startArray;
+                startArray = temp;
+            }
+            for (n = 0; n < startArray.length; n += 2) {
+                start.push({
+                    x: startArray[n],
+                    y: startArray[n + 1]
+                });
+            }
+            for (n = 0; n < endArray.length; n += 2) {
+                end.push({
+                    x: endArray[n],
+                    y: endArray[n + 1]
+                });
+            }
+
+
+            var newStart = [];
+            end.forEach(function (point) {
+                var pr = Konva.Util._getProjectionToLine(point, start, isClosed);
+                newStart.push(pr.x);
+                newStart.push(pr.y);
+            });
+            return newStart;
         }
     };
 })();
@@ -1813,13 +1892,7 @@ var Konva = {};
 
     Konva.SceneContext.prototype = {
         _fillColor: function (shape) {
-            var fill = shape.fill()
-                || Konva.Util._getRGBAString({
-                    red: shape.fillRed(),
-                    green: shape.fillGreen(),
-                    blue: shape.fillBlue(),
-                    alpha: shape.fillAlpha()
-                });
+            var fill = shape.fill();
 
             this.setAttr('fillStyle', fill);
             shape._fillFunc(this);
@@ -1878,7 +1951,7 @@ var Konva = {};
             this.fill();
         },
         _fill: function (shape) {
-            var hasColor = shape.fill() || shape.fillRed() || shape.fillGreen() || shape.fillBlue(),
+            var hasColor = shape.fill(),
                 hasPattern = shape.getFillPatternImage(),
                 hasLinearGradient = shape.getFillLinearGradientColorStops(),
                 hasRadialGradient = shape.getFillRadialGradientColorStops(),
@@ -1928,13 +2001,8 @@ var Konva = {};
                 }
 
                 this.setAttr('lineWidth', shape.strokeWidth());
-                this.setAttr('strokeStyle', shape.stroke()
-                    || Konva.Util._getRGBAString({
-                        red: shape.strokeRed(),
-                        green: shape.strokeGreen(),
-                        blue: shape.strokeBlue(),
-                        alpha: shape.strokeAlpha()
-                    }));
+                this.setAttr('strokeStyle', shape.stroke());
+
                 if (!shape.getShadowForStrokeEnabled()) {
                     this.setAttr('shadowColor', 'rgba(0,0,0,0)');
                 }
@@ -2063,6 +2131,9 @@ var Konva = {};
                 }
 
                 for (key in val) {
+                    if (!val.hasOwnProperty(key)) {
+                        continue;
+                    }
                     this._setAttr(attr + capitalize(key), val[key]);
                 }
 
@@ -2088,18 +2159,31 @@ var Konva = {};
                     this[setter](arguments[0]);
                     return this;
                 }
-                    // getting
-                else {
-                    return this[getter]();
-                }
+                // getting
+                return this[getter]();
             };
         },
+        addDeprecatedGetterSetter: function (constructor, attr, def, validator) {
+            var method = GET + Konva.Util._capitalize(attr);
+            var message = attr + ' property is deprecated and will be removed soon. Look at Konva change log for more information.';
+            constructor.prototype[method] = function () {
+                Konva.Util.error(message);
+                var val = this.attrs[attr];
+                return val === undefined ? def : val;
+            };
+            this.addSetter(constructor, attr, validator, function () {
+                Konva.Util.error(message);
+            });
+            this.addOverloadedGetterSetter(constructor, attr);
+        },
         backCompat: function (constructor, methods) {
-            var key;
-
-            for (key in methods) {
-                constructor.prototype[key] = constructor.prototype[methods[key]];
-            }
+            Konva.Util.each(methods, function (oldMethodName, newMethodName) {
+                var method = constructor.prototype[newMethodName];
+                constructor.prototype[oldMethodName] = function () {
+                    method.apply(this, arguments);
+                    Konva.Util.error(oldMethodName + ' method is deprecated and will be removed soon. Use ' + newMethodName + ' instead');
+                };
+            });
         },
         afterSetFilter: function () {
             this._filterUpToDate = false;
@@ -2115,9 +2199,8 @@ var Konva = {};
                 return 255;
             } else if (val < 0) {
                 return 0;
-            } else {
-                return Math.round(val);
             }
+            return Math.round(val);
         },
         alphaComponent: function (val) {
             if (val > 1) {
@@ -2127,9 +2210,8 @@ var Konva = {};
             else if (val < 0.0001) {
                 return 0.0001;
             }
-            else {
-                return val;
-            }
+
+            return val;
         }
     };
 })();
@@ -2391,8 +2473,8 @@ var Konva = {};
             return this;
         },
         /**
-         * return client rectangle (x, y, width, height) of node. This rectangle also include all styling (strokes, shadows, etc).
-         * This rectangle relative to parent container.
+         * Return client rectangle {x, y, width, height} of node. This rectangle also include all styling (strokes, shadows, etc).
+         * The rectangle position is relative to parent container.
          * @method
          * @memberof Konva.Node.prototype
          * @param {Boolean} [skipTransform] flag should we skip transformation to rectangle
@@ -2425,7 +2507,7 @@ var Konva = {};
         getClientRect: function () {
             // abstract method
             // redefine in Container and Shape
-            throw 'abstract "getClientRect" method call';
+            throw new Error('abstract "getClientRect" method call');
         },
         _transformedRect: function (rect) {
             var points = [
@@ -2515,9 +2597,7 @@ var Konva = {};
 
                 return filterCanvas;
             }
-            else {
-                return sceneCanvas;
-            }
+            return sceneCanvas;
         },
         /**
          * bind events to the node. KonvaJS supports mouseover, mousemove,
@@ -2574,8 +2654,18 @@ var Konva = {};
          *   var oldVal = evt.oldVal;
          *   var newVal = evt.newVal;
          * });
+         *
+         * // get event targets
+         * // with event delegations
+         * layer.on('click', 'Group', function(evt) {
+         *   var shape = evt.target;
+         *   var group = evtn.currentTarger;
+         * });
          */
         on: function (evtStr, handler) {
+            if (arguments.length === 3) {
+                return this._delegate.apply(this, arguments);
+            }
             var events = evtStr.split(SPACE),
                 len = events.length,
                 n, event, parts, baseEvent, name;
@@ -2663,15 +2753,30 @@ var Konva = {};
                 evt: evt
             };
             this.fire(evt.type, e);
+            return this;
         },
         addEventListener: function (type, handler) {
             // we have to pass native event to handler
             this.on(type, function (evt) {
                 handler.call(this, evt.evt);
             });
+            return this;
         },
         removeEventListener: function (type) {
             this.off(type);
+            return this;
+        },
+        // like node.on
+        _delegate: function (event, selector, handler) {
+            var stopNode = this;
+            this.on(event, function (evt) {
+                var targets = evt.target.findAncestors(selector, true, stopNode);
+                for (var i = 0; i < targets.length; i++) {
+                    evt = Konva.Util.cloneObject(evt);
+                    evt.currentTarget = targets[i];
+                    handler.call(targets[i], evt);
+                }
+            });
         },
         /**
          * remove self from parent, but don't destroy
@@ -2713,6 +2818,7 @@ var Konva = {};
             Konva._removeName(this.getName(), this._id);
 
             this.remove();
+            return this;
         },
         /**
          * get attr
@@ -2728,10 +2834,8 @@ var Konva = {};
             if (Konva.Util._isFunction(this[method])) {
                 return this[method]();
             }
-                // otherwise get directly
-            else {
-                return this.attrs[attr];
-            }
+            // otherwise get directly
+            return this.attrs[attr];
         },
         /**
         * get ancestors
@@ -2988,12 +3092,14 @@ var Konva = {};
         },
         /**
          * get absolute position relative to the top left corner of the stage container div
+         * or relative to passed node
          * @method
+         * @param {Object} [top] optional parent node
          * @memberof Konva.Node.prototype
          * @returns {Object}
          */
-        getAbsolutePosition: function () {
-            var absoluteMatrix = this.getAbsoluteTransform().getMatrix(),
+        getAbsolutePosition: function (top) {
+            var absoluteMatrix = this.getAbsoluteTransform(top).getMatrix(),
                 absoluteTransform = new Konva.Transform(),
                 offset = this.offset();
 
@@ -3327,6 +3433,84 @@ var Konva = {};
             return this.parent;
         },
         /**
+         * get all ancestros (parent then parent of the parent, etc) of the node
+         * @method
+         * @memberof Konva.Node.prototype
+         * @param {String} [selector] selector for search
+         * @param {Boolean} [includeSelf] show we think that node is ancestro itself?
+         * @param {Konva.Node} [stopNode] optional node where we need to stop searching (one of ancestors)
+         * @returns {Array} [ancestors]
+         * @example
+         * // get one of the parent group
+         * var parentGroups = node.findAncestors('Group');
+         */
+        findAncestors: function (selector, includeSelf, stopNode) {
+            var res = [];
+
+            if (includeSelf && this._isMatch(selector)) {
+                res.push(this);
+            }
+            var ancestor = this.parent;
+            while (ancestor) {
+                if (ancestor === stopNode) {
+                    return res;
+                }
+                if (ancestor._isMatch(selector)) {
+                    res.push(ancestor);
+                }
+                ancestor = ancestor.parent;
+            }
+            return res;
+        },
+        /**
+         * get ancestor (parent or parent of the parent, etc) of the node that match passed selector
+         * @method
+         * @memberof Konva.Node.prototype
+         * @param {String} [selector] selector for search
+         * @param {Boolean} [includeSelf] show we think that node is ancestro itself?
+         * @param {Konva.Node} [stopNode] optional node where we need to stop searching (one of ancestors)
+         * @returns {Konva.Node} ancestor
+         * @example
+         * // get one of the parent group
+         * var group = node.findAncestors('.mygroup');
+         */
+        findAncestor: function (selector, includeSelf, stopNode) {
+            return this.findAncestors(selector, includeSelf, stopNode)[0];
+        },
+        // is current node match passed selector?
+        _isMatch: function (selector) {
+            if (!selector) {
+                return false;
+            }
+            var selectorArr = selector.replace(/ /g, '').split(','),
+                len = selectorArr.length,
+                n, sel;
+
+            for (n = 0; n < len; n++) {
+                sel = selectorArr[n];
+                if (!Konva.Util.isValidSelector(sel)) {
+                    Konva.Util.warn('Selector "' + sel + '" is invalid. Allowed selectors examples are "#foo", ".bar" or "Group".');
+                    Konva.Util.warn('If you have a custom shape with such className, please change it to start with upper letter like "Triangle".');
+                    Konva.Util.warn('Konva is awesome, right?');
+                }
+                // id selector
+                if (sel.charAt(0) === '#') {
+                    if (this.id() === sel.slice(1)) {
+                        return true;
+                    }
+                }
+                    // name selector
+                else if (sel.charAt(0) === '.') {
+                    if (this.hasName(sel.slice(1))) {
+                        return true;
+                    }
+                } else if (this._get(sel).length !== 0) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        /**
          * get layer ancestor
          * @method
          * @memberof Konva.Node.prototype
@@ -3379,13 +3563,15 @@ var Konva = {};
          * node.fire('click', null, true);
          */
         fire: function (eventType, evt, bubble) {
+            evt = evt || {};
+            evt.target = evt.target || this;
             // bubble
             if (bubble) {
-                this._fireAndBubble(eventType, evt || {});
+                this._fireAndBubble(eventType, evt);
             }
                 // no bubble
             else {
-                this._fire(eventType, evt || {});
+                this._fire(eventType, evt);
             }
             return this;
         },
@@ -3754,6 +3940,7 @@ var Konva = {};
                 names.splice(index, 1);
                 this.setName(names.join(' '));
             }
+            return this;
         },
         /**
          * set attr
@@ -3782,6 +3969,9 @@ var Konva = {};
             var oldVal;
             if (val !== undefined) {
                 oldVal = this.attrs[key];
+                if (oldVal === val) {
+                    return;
+                }
                 this.attrs[key] = val;
                 this._fireChangeEvent(key, oldVal, val);
             }
@@ -3818,7 +4008,7 @@ var Konva = {};
 
                 // simulate event bubbling
                 var stopBubble = (eventType === MOUSEENTER || eventType === MOUSELEAVE) && ((compareShape && compareShape.isAncestorOf && compareShape.isAncestorOf(this)) || !!(compareShape && compareShape.isAncestorOf));
-                if (evt && !evt.cancelBubble && this.parent && this.parent.isListening() && (!stopBubble)) {
+                if ((evt && !evt.cancelBubble || !evt) && this.parent && this.parent.isListening() && (!stopBubble)) {
                     if (compareShape && compareShape.parent) {
                         this._fireAndBubble.call(this.parent, eventType, evt, compareShape.parent);
                     }
@@ -3832,6 +4022,8 @@ var Konva = {};
             var events = this.eventListeners[eventType],
                 i;
 
+            evt = Konva.Util.cloneObject(evt || {});
+            evt.currentTarget = this;
             evt.type = eventType;
 
             if (events) {
@@ -3854,7 +4046,7 @@ var Konva = {};
     });
 
     /**
-     * create node with JSON string.  De-serializtion does not generate custom
+     * create node with JSON string or an Object.  De-serializtion does not generate custom
      *  shape drawing functions, images, or event handlers (this would make the
      *  serialized object huge).  If your app uses custom shapes, images, and
      *  event handlers (it probably does), then you need to select the appropriate
@@ -3862,12 +4054,15 @@ var Konva = {};
      *  and setImage() methods
      * @method
      * @memberof Konva.Node
-     * @param {String} json
+     * @param {String|Object} json string or object
      * @param {Element} [container] optional container dom element used only if you're
      *  creating a stage node
      */
-    Konva.Node.create = function (json, container) {
-        return this._createNode(JSON.parse(json), container);
+    Konva.Node.create = function (data, container) {
+        if (Konva.Util._isString(data)) {
+            data = JSON.parse(data);
+        }
+        return this._createNode(data, container);
     };
     Konva.Node._createNode = function (obj, container) {
         var className = Konva.Node.prototype.getClassName.call(obj),
@@ -3992,7 +4187,7 @@ var Konva = {};
     Konva.Factory.addOverloadedGetterSetter(Konva.Node, 'id');
 
     /**
-     * get/set id
+     * get/set id. Id is global for whole page.
      * @name id
      * @method
      * @memberof Konva.Node.prototype
@@ -4371,6 +4566,7 @@ var Konva = {};
 })(Konva);
 
 (function () {
+    'use strict';
     /**
     * Grayscale Filter
     * @function
@@ -4398,6 +4594,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Brighten Filter.
      * @function
@@ -4438,6 +4635,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
     * Invert Filter
     * @function
@@ -4468,6 +4666,7 @@ var Konva = {};
  master repo: https://github.com/pavelpower/kineticjsGaussFilter
 */
 (function () {
+    'use strict';
     /*
 
      StackBlur - a fast almost Gaussian Blur For Canvas
@@ -4812,8 +5011,9 @@ var Konva = {};
     */
 })();
 
+/*eslint-disable  max-depth */
 (function () {
-
+    'use strict';
     function pixelAt(idata, x, y) {
         var idx = (y * idata.width + x) * 4;
         var d = [];
@@ -5011,6 +5211,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * RGB Filter
      * @function
@@ -5095,7 +5296,115 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
+    /**
+     * RGBA Filter
+     * @function
+     * @name RGBA
+     * @memberof Konva.Filters
+     * @param {Object} imageData
+     * @author codefo
+     * @example
+     * node.cache();
+     * node.filters([Konva.Filters.RGBA]);
+     * node.blue(120);
+     * node.green(200);
+     * node.alpha(0.3);
+     */
+    Konva.Filters.RGBA = function (imageData) {
+        var data = imageData.data,
+            nPixels = data.length,
+            red = this.red(),
+            green = this.green(),
+            blue = this.blue(),
+            alpha = this.alpha(),
+            i, ia;
 
+        for (i = 0; i < nPixels; i += 4) {
+            ia = 1 - alpha;
+
+            data[i] = red * alpha + data[i] * ia; // r
+            data[i + 1] = green * alpha + data[i + 1] * ia; // g
+            data[i + 2] = blue * alpha + data[i + 2] * ia; // b
+        }
+    };
+
+    Konva.Factory.addGetterSetter(Konva.Node, 'red', 0, function (val) {
+        this._filterUpToDate = false;
+        if (val > 255) {
+            return 255;
+        }
+        else if (val < 0) {
+            return 0;
+        }
+        else {
+            return Math.round(val);
+        }
+    });
+    /**
+    * get/set filter red value. Use with {@link Konva.Filters.RGBA} filter.
+    * @name red
+    * @method
+    * @memberof Konva.Node.prototype
+    * @param {Integer} red value between 0 and 255
+    * @returns {Integer}
+    */
+
+    Konva.Factory.addGetterSetter(Konva.Node, 'green', 0, function (val) {
+        this._filterUpToDate = false;
+        if (val > 255) {
+            return 255;
+        }
+        else if (val < 0) {
+            return 0;
+        }
+        else {
+            return Math.round(val);
+        }
+    });
+    /**
+    * get/set filter green value. Use with {@link Konva.Filters.RGBA} filter.
+    * @name green
+    * @method
+    * @memberof Konva.Node.prototype
+    * @param {Integer} green value between 0 and 255
+    * @returns {Integer}
+    */
+
+    Konva.Factory.addGetterSetter(Konva.Node, 'blue', 0, Konva.Validators.RGBComponent, Konva.Factory.afterSetFilter);
+    /**
+    * get/set filter blue value. Use with {@link Konva.Filters.RGBA} filter.
+    * @name blue
+    * @method
+    * @memberof Konva.Node.prototype
+    * @param {Integer} blue value between 0 and 255
+    * @returns {Integer}
+    */
+
+    Konva.Factory.addGetterSetter(Konva.Node, 'alpha', 1, function (val) {
+        this._filterUpToDate = false;
+        if (val > 1) {
+            return 1;
+        }
+        else if (val < 0) {
+            return 0;
+        }
+        else {
+            return val;
+        }
+    });
+    /**
+     * get/set filter alpha value. Use with {@link Konva.Filters.RGBA} filter.
+     * @name alpha
+     * @method
+     * @memberof Konva.Node.prototype
+     * @param {Float} alpha value between 0 and 1
+     * @returns {Float}
+     */
+})();
+
+(function () {
+    'use strict';
     /**
     * HSV Filter. Adjusts the hue, saturation and value
     * @function
@@ -5190,6 +5499,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
 
     Konva.Factory.addGetterSetter(Konva.Node, 'hue', 0, null, Konva.Factory.afterSetFilter);
     /**
@@ -5283,6 +5593,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Emboss Filter.
      * Pixastic Lib - Emboss filter - v0.1.0
@@ -5464,6 +5775,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     function remap(fromValue, fromMin, fromMax, toMin, toMax) {
         // Compute the range of the data
         var fromRange = fromMax - fromMin,
@@ -5580,7 +5892,7 @@ var Konva = {};
 })();
 
 (function () {
-
+    'use strict';
     /**
      * Posterize Filter. Adjusts the channels so that there are no more
      *  than n different values for that channel. This is also applied
@@ -5622,6 +5934,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
 
     /**
      * Noise Filter. Randomly adds or substracts to the color channels
@@ -5661,8 +5974,9 @@ var Konva = {};
     */
 })();
 
+/*eslint-disable max-depth */
 (function () {
-
+    'use strict';
     /**
      * Pixelate Filter. Averages groups of pixels and redraws
      *  them as larger pixels
@@ -5756,7 +6070,7 @@ var Konva = {};
 })();
 
 (function () {
-
+    'use strict';
     /**
      * Threshold Filter. Pushes any value above the mid point to
      *  the max and any value below the mid point to the min.
@@ -5796,6 +6110,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Sepia Filter
      * Based on: Pixastic Lib - Sepia filter - v0.1.0
@@ -5841,6 +6156,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Solarize Filter
      * Pixastic Lib - Solarize filter - v0.1.0
@@ -5891,6 +6207,7 @@ var Konva = {};
 
 
 (function () {
+    'use strict';
 
     /*
      * ToPolar Filter. Converts image data to polar coordinates. Performs
@@ -5949,7 +6266,7 @@ var Konva = {};
                 a = srcPixels[i + 3];
 
                 // Store it
-                //i = (theta * xSize + radius) * 4;
+                //i = (theta * xSize  +  radius) * 4;
                 i = (theta + radius * xSize) * 4;
                 dstPixels[i + 0] = r;
                 dstPixels[i + 1] = g;
@@ -6220,15 +6537,15 @@ var Konva = {};
         getChildren: function (filterFunc) {
             if (!filterFunc) {
                 return this.children;
-            } else {
-                var results = new Konva.Collection();
-                this.children.each(function (child) {
-                    if (filterFunc(child)) {
-                        results.push(child);
-                    }
-                });
-                return results;
             }
+
+            var results = new Konva.Collection();
+            this.children.each(function (child) {
+                if (filterFunc(child)) {
+                    results.push(child);
+                }
+            });
+            return results;
         },
         /**
          * determine if node has children
@@ -6310,7 +6627,7 @@ var Konva = {};
             });
 
             // if node under drag we need to update drag animation
-            if (child.isDragging()) {
+            if (Konva.DD && child.isDragging()) {
                 Konva.DD.anim.setLayers(child.getLayer());
             }
 
@@ -6324,6 +6641,7 @@ var Konva = {};
             }
             // then destroy self
             Konva.Node.prototype.destroy.call(this);
+            return this;
         },
         /**
          * return a {@link Konva.Collection} of nodes that match the selector.  Use '#' for id selections
@@ -6357,7 +6675,11 @@ var Konva = {};
 
             for (n = 0; n < len; n++) {
                 sel = selectorArr[n];
-
+                if (!Konva.Util.isValidSelector(sel)) {
+                    Konva.Util.warn('Selector "' + sel + '" is invalid. Allowed selectors examples are "#foo", ".bar" or "Group".');
+                    Konva.Util.warn('If you have a custom shape with such className, please change it to start with upper letter like "Triangle".');
+                    Konva.Util.warn('Konva is awesome, right?');
+                }
                 // id selector
                 if (sel.charAt(0) === '#') {
                     node = this._getNodeById(sel.slice(1));
@@ -6516,7 +6838,7 @@ var Konva = {};
                     context.restore();
                 }
                 else {
-                    this._drawChildren(canvas, 'drawScene', top);
+                    this._drawChildren(canvas, 'drawScene', top, false, caching);
                 }
             }
             return this;
@@ -6544,7 +6866,7 @@ var Konva = {};
             }
             return this;
         },
-        _drawChildren: function (canvas, drawMethod, top) {
+        _drawChildren: function (canvas, drawMethod, top, caching, skipBuffer) {
             var layer = this.getLayer(),
                 context = canvas && canvas.getContext(),
                 clipWidth = this.getClipWidth(),
@@ -6565,7 +6887,7 @@ var Konva = {};
             }
 
             this.children.each(function (child) {
-                child[drawMethod](canvas, top);
+                child[drawMethod](canvas, top, caching, skipBuffer);
             });
 
             if (hasClip) {
@@ -6581,8 +6903,21 @@ var Konva = {};
         },
         getClientRect: function (skipTransform) {
             var minX, minY, maxX, maxY;
+            var selfRect = {
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0
+            };
             this.children.each(function (child) {
                 var rect = child.getClientRect();
+
+                // skip invisible children (like empty groups)
+                // or don't skip... hmmm...
+                // if (rect.width === 0 && rect.height === 0) {
+                //     return;
+                // }
+
                 if (minX === undefined) { // initial value for first child
                     minX = rect.x;
                     minY = rect.y;
@@ -6597,12 +6932,15 @@ var Konva = {};
 
             });
 
-            var selfRect = {
-                x: minX,
-                y: minY,
-                width: maxX - minX,
-                height: maxY - minY
-            };
+            if (this.children.length !== 0) {
+                selfRect = {
+                    x: minX,
+                    y: minY,
+                    width: maxX - minX,
+                    height: maxY - minY
+                };
+            }
+
             if (!skipTransform) {
                 return this._transformedRect(selfRect);
             }
@@ -6741,10 +7079,6 @@ var Konva = {};
      * @augments Konva.Node
      * @param {Object} config
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -6775,10 +7109,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -6790,10 +7120,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -6933,7 +7259,7 @@ var Konva = {};
          * @returns {Boolean}
          */
         hasStroke: function () {
-            return !!(this.stroke() || this.strokeRed() || this.strokeGreen() || this.strokeBlue());
+            return !!(this.stroke());
         },
         /**
          * determines if point is in the shape, regardless if other shapes are on top of it.  Note: because
@@ -6961,6 +7287,7 @@ var Konva = {};
         destroy: function () {
             Konva.Node.prototype.destroy.call(this);
             delete Konva.shapes[this.colorKey];
+            return this;
         },
         _useBufferCanvas: function (caching) {
             return !caching && (this.perfectDrawEnabled() && (this.getAbsoluteOpacity() !== 1) && this.hasFill() && this.hasStroke() && this.getStage()) ||
@@ -7023,7 +7350,7 @@ var Konva = {};
             }
             return rect;
         },
-        drawScene: function (can, top, caching) {
+        drawScene: function (can, top, caching, skipBuffer) {
             var layer = this.getLayer(),
                 canvas = can || layer.getCanvas(),
                 context = canvas.getContext(),
@@ -7048,7 +7375,7 @@ var Konva = {};
             }
             context.save();
             // if buffer canvas is needed
-            if (this._useBufferCanvas(caching)) {
+            if (this._useBufferCanvas(caching) && !skipBuffer) {
                 stage = this.getStage();
                 bufferCanvas = stage.bufferCanvas;
                 bufferContext = bufferCanvas.getContext();
@@ -7245,74 +7572,11 @@ var Konva = {};
      * shape.stroke('rgba(0,255,0,0.5');
      */
 
-    Konva.Factory.addGetterSetter(Konva.Shape, 'strokeRed', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'strokeRed', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'strokeGreen', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'strokeBlue', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'strokeAlpha', 1, Konva.Validators.alphaComponent);
 
-    /**
-     * get/set stroke red component
-     * @name strokeRed
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} red
-     * @returns {Integer}
-     * @example
-     * // get stroke red component
-     * var strokeRed = shape.strokeRed();
-     *
-     * // set stroke red component
-     * shape.strokeRed(0);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'strokeGreen', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set stroke green component
-     * @name strokeGreen
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} green
-     * @returns {Integer}
-     * @example
-     * // get stroke green component
-     * var strokeGreen = shape.strokeGreen();
-     *
-     * // set stroke green component
-     * shape.strokeGreen(255);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'strokeBlue', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set stroke blue component
-     * @name strokeBlue
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} blue
-     * @returns {Integer}
-     * @example
-     * // get stroke blue component
-     * var strokeBlue = shape.strokeBlue();
-     *
-     * // set stroke blue component
-     * shape.strokeBlue(0);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'strokeAlpha', 1, Konva.Validators.alphaComponent);
-
-    /**
-     * get/set stroke alpha component.  Alpha is a real number between 0 and 1.  The default
-     *  is 1.
-     * @name strokeAlpha
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Number} alpha
-     * @returns {Number}
-     * @example
-     * // get stroke alpha component
-     * var strokeAlpha = shape.strokeAlpha();
-     *
-     * // set stroke alpha component
-     * shape.strokeAlpha(0.5);
-     */
 
     Konva.Factory.addGetterSetter(Konva.Shape, 'strokeWidth', 2);
 
@@ -7515,74 +7779,10 @@ var Konva = {};
      * shape.shadowColor('rgba(0,255,0,0.5');
      */
 
-    Konva.Factory.addGetterSetter(Konva.Shape, 'shadowRed', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set shadow red component
-     * @name shadowRed
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} red
-     * @returns {Integer}
-     * @example
-     * // get shadow red component
-     * var shadowRed = shape.shadowRed();
-     *
-     * // set shadow red component
-     * shape.shadowRed(0);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'shadowGreen', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set shadow green component
-     * @name shadowGreen
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} green
-     * @returns {Integer}
-     * @example
-     * // get shadow green component
-     * var shadowGreen = shape.shadowGreen();
-     *
-     * // set shadow green component
-     * shape.shadowGreen(255);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'shadowBlue', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set shadow blue component
-     * @name shadowBlue
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} blue
-     * @returns {Integer}
-     * @example
-     * // get shadow blue component
-     * var shadowBlue = shape.shadowBlue();
-     *
-     * // set shadow blue component
-     * shape.shadowBlue(0);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'shadowAlpha', 1, Konva.Validators.alphaComponent);
-
-    /**
-     * get/set shadow alpha component.  Alpha is a real number between 0 and 1.  The default
-     *  is 1.
-     * @name shadowAlpha
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Number} alpha
-     * @returns {Number}
-     * @example
-     * // get shadow alpha component
-     * var shadowAlpha = shape.shadowAlpha();
-     *
-     * // set shadow alpha component
-     * shape.shadowAlpha(0.5);
-     */
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'shadowRed', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'shadowGreen', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'shadowBlue', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'shadowAlpha', 1, Konva.Validators.alphaComponent);
 
     Konva.Factory.addGetterSetter(Konva.Shape, 'shadowBlur');
 
@@ -7724,75 +7924,10 @@ var Konva = {};
      * shape.fill(null);
      */
 
-    Konva.Factory.addGetterSetter(Konva.Shape, 'fillRed', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set fill red component
-     * @name fillRed
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} red
-     * @returns {Integer}
-     * @example
-     * // get fill red component
-     * var fillRed = shape.fillRed();
-     *
-     * // set fill red component
-     * shape.fillRed(0);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'fillGreen', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set fill green component
-     * @name fillGreen
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} green
-     * @returns {Integer}
-     * @example
-     * // get fill green component
-     * var fillGreen = shape.fillGreen();
-     *
-     * // set fill green component
-     * shape.fillGreen(255);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'fillBlue', 0, Konva.Validators.RGBComponent);
-
-    /**
-     * get/set fill blue component
-     * @name fillBlue
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Integer} blue
-     * @returns {Integer}
-     * @example
-     * // get fill blue component
-     * var fillBlue = shape.fillBlue();
-     *
-     * // set fill blue component
-     * shape.fillBlue(0);
-     */
-
-    Konva.Factory.addGetterSetter(Konva.Shape, 'fillAlpha', 1, Konva.Validators.alphaComponent);
-
-    /**
-     * get/set fill alpha component.  Alpha is a real number between 0 and 1.  The default
-     *  is 1.
-     * @name fillAlpha
-     * @method
-     * @memberof Konva.Shape.prototype
-     * @param {Number} alpha
-     * @returns {Number}
-     * @example
-     * // get fill alpha component
-     * var fillAlpha = shape.fillAlpha();
-     *
-     * // set fill alpha component
-     * shape.fillAlpha(0.5);
-     */
-
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'fillRed', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'fillGreen', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'fillBlue', 0, Konva.Validators.RGBComponent);
+    Konva.Factory.addDeprecatedGetterSetter(Konva.Shape, 'fillAlpha', 1, Konva.Validators.alphaComponent);
 
     Konva.Factory.addGetterSetter(Konva.Shape, 'fillPatternX', 0);
 
@@ -8430,6 +8565,7 @@ var Konva = {};
         CONTENT_TOUCHSTART = 'contentTouchstart',
         CONTENT_TOUCHEND = 'contentTouchend',
         CONTENT_DBL_TAP = 'contentDbltap',
+        CONTENT_TAP = 'contentTap',
         CONTENT_TOUCHMOVE = 'contentTouchmove',
 
         DIV = 'div',
@@ -8501,7 +8637,7 @@ var Konva = {};
         },
         _validateAdd: function (child) {
             if (child.getType() !== 'Layer') {
-                Konva.Util.error('You may only add layers to the stage.');
+                Konva.Util.throw('You may only add layers to the stage.');
             }
         },
         /**
@@ -8602,6 +8738,7 @@ var Konva = {};
             if (index > -1) {
                 Konva.stages.splice(index, 1);
             }
+            return this;
         },
         /**
          * get pointer position which can be a touch position or mouse position
@@ -8625,11 +8762,11 @@ var Konva = {};
             return this.content;
         },
         /**
-         * Creates a composite data URL and requires a callback because the composite is generated asynchronously.
+         * Creates a composite data URL
          * @method
          * @memberof Konva.Stage.prototype
          * @param {Object} config
-         * @param {Function} config.callback function executed when the composite has completed
+         * @param {Function} [config.callback] function executed when the composite has completed. Deprecated as method is sync now.
          * @param {String} [config.mimeType] can be "image/png" or "image/jpeg".
          *  "image/png" is the default
          * @param {Number} [config.x] x position of canvas section
@@ -8659,27 +8796,20 @@ var Konva = {};
                 _context.translate(-1 * x, -1 * y);
             }
 
-            function drawLayer(n) {
-                var layer = layers[n],
-                    layerUrl = layer.toDataURL({
-                        pixelRatio: config.pixelRatio
-                    }),
-                    pixelRatio = canvas.pixelRatio,
-                    imageObj = new Konva.window.Image();
 
-                imageObj.onload = function () {
-                    _context.drawImage(imageObj, 0, 0, imageObj.width / pixelRatio, imageObj.height / pixelRatio);
+            layers.each(function (layer) {
+                var width = layer.getCanvas().getWidth();
+                var height = layer.getCanvas().getHeight();
+                var ratio = layer.getCanvas().getPixelRatio();
+                _context.drawImage(layer.getCanvas()._canvas, 0, 0, width / ratio, height / ratio);
+            });
+            var src = canvas.toDataURL(mimeType, quality);
 
-                    if (n < layers.length - 1) {
-                        drawLayer(n + 1);
-                    }
-                    else {
-                        config.callback(canvas.toDataURL(mimeType, quality));
-                    }
-                };
-                imageObj.src = layerUrl;
+            if (config.callback) {
+                config.callback(src);
             }
-            drawLayer(0);
+
+            return src;
         },
         /**
          * converts stage into an image.
@@ -8715,16 +8845,21 @@ var Konva = {};
          * @param {Object} pos
          * @param {Number} pos.x
          * @param {Number} pos.y
-         * @returns {Konva.Shape}
+         * @param {String} [selector]
+         * @returns {Konva.Node}
+         * @example
+         * var shape = stage.getIntersection({x: 50, y: 50});
+         * // or if you interested in shape parent:
+         * var group = stage.getIntersection({x: 50, y: 50}, 'Group');
          */
-        getIntersection: function (pos) {
+        getIntersection: function (pos, selector) {
             var layers = this.getChildren(),
                 len = layers.length,
                 end = len - 1,
                 n, shape;
 
             for (n = end; n >= 0; n--) {
-                shape = layers[n].getIntersection(pos);
+                shape = layers[n].getIntersection(pos, selector);
                 if (shape) {
                     return shape;
                 }
@@ -8826,14 +8961,14 @@ var Konva = {};
                 return this._touchmove(evt);
             }
             // workaround fake mousemove event in chrome browser https://code.google.com/p/chromium/issues/detail?id=161464
-            if ((typeof evt.webkitMovementX !== 'undefined' || typeof evt.webkitMovementY !== 'undefined') && evt.webkitMovementY === 0 && evt.webkitMovementX === 0) {
+            if ((typeof evt.movementX !== 'undefined' || typeof evt.movementY !== 'undefined') && evt.movementY === 0 && evt.movementX === 0) {
                 return null;
             }
             if (Konva.UA.mobile) {
                 return null;
             }
             this._setPointerPosition(evt);
-            var dd = Konva.DD, shape;
+            var shape;
 
             if (!Konva.isDragging()) {
                 shape = this.getIntersection(this.getPointerPosition());
@@ -8866,9 +9001,6 @@ var Konva = {};
 
                 // content event
                 this._fire(CONTENT_MOUSEMOVE, { evt: evt });
-            }
-            if (dd) {
-                dd._drag(evt);
             }
 
             // always call preventDefault for desktop events because some browsers
@@ -9013,8 +9145,9 @@ var Konva = {};
                 }
             }
             // content events
+            this._fire(CONTENT_TOUCHEND, { evt: evt });
             if (Konva.listenClickTap) {
-                this._fire(CONTENT_TOUCHEND, { evt: evt });
+                this._fire(CONTENT_TAP, { evt: evt });
                 if (fireDblClick) {
                     this._fire(CONTENT_DBL_TAP, { evt: evt });
                 }
@@ -9038,7 +9171,6 @@ var Konva = {};
                 this._fire(CONTENT_TOUCHMOVE, { evt: evt });
             }
             if (dd) {
-                dd._drag(evt);
                 if (Konva.isDragging()) {
                     evt.preventDefault();
                 }
@@ -9060,11 +9192,8 @@ var Konva = {};
         },
         _setPointerPosition: function (evt) {
             var contentPosition = this._getContentPosition(),
-                offsetX = evt.offsetX,
-                clientX = evt.clientX,
                 x = null,
-                y = null,
-                touch;
+                y = null;
             evt = evt ? evt : window.event;
 
             // touch events
@@ -9072,8 +9201,7 @@ var Konva = {};
                 // currently, only handle one finger
                 if (evt.touches.length > 0) {
 
-                    touch = evt.touches[0];
-
+                    var touch = evt.touches[0];
                     // get the information for finger #1
                     x = touch.clientX - contentPosition.left;
                     y = touch.clientY - contentPosition.top;
@@ -9081,26 +9209,9 @@ var Konva = {};
             }
                 // mouse events
             else {
-                // if offsetX is defined, assume that offsetY is defined as well
-                if (offsetX !== undefined) {
-                    x = offsetX;
-                    y = evt.offsetY;
-                }
-                    // we unfortunately have to use UA detection here because accessing
-                    // the layerX or layerY properties in newer versions of Chrome
-                    // throws a JS warning.  layerX and layerY are required for FF
-                    // when the container is transformed via CSS.
-                else if (Konva.UA.browser === 'mozilla') {
-                    x = evt.layerX || (evt.clientX - contentPosition.left);
-                    y = evt.layerY || (evt.clientY - contentPosition.top);
-                }
-                    // if clientX is defined, assume that clientY is defined as well
-                else if (clientX !== undefined && contentPosition) {
-                    x = clientX - contentPosition.left;
-                    y = evt.clientY - contentPosition.top;
-                }
+                x = evt.clientX - contentPosition.left;
+                y = evt.clientY - contentPosition.top;
             }
-
             if (x !== null && y !== null) {
                 this.pointerPos = {
                     x: x,
@@ -9310,16 +9421,17 @@ var Konva = {};
                 stage.content.removeChild(this.getCanvas()._canvas);
                 stage.content.appendChild(this.getCanvas()._canvas);
             }
+            return this;
         },
         // extend Node.prototype.moveUp
         moveUp: function () {
             var moved = Konva.Node.prototype.moveUp.call(this);
             if (!moved) {
-                return;
+                return this;
             }
             var stage = this.getStage();
             if (!stage) {
-                return;
+                return this;
             }
             stage.content.removeChild(this.getCanvas()._canvas);
 
@@ -9328,6 +9440,7 @@ var Konva = {};
             } else {
                 stage.content.appendChild(this.getCanvas()._canvas);
             }
+            return this;
         },
         // extend Node.prototype.moveDown
         moveDown: function () {
@@ -9339,6 +9452,7 @@ var Konva = {};
                     stage.content.insertBefore(this.getCanvas()._canvas, children[this.index + 1].getCanvas()._canvas);
                 }
             }
+            return this;
         },
         // extend Node.prototype.moveToBottom
         moveToBottom: function () {
@@ -9350,6 +9464,7 @@ var Konva = {};
                     stage.content.insertBefore(this.getCanvas()._canvas, children[1].getCanvas()._canvas);
                 }
             }
+            return this;
         },
         getLayer: function () {
             return this;
@@ -9369,6 +9484,7 @@ var Konva = {};
         },
         setSize: function (width, height) {
             this.canvas.setSize(width, height);
+            return this;
         },
         /**
          * get/set width of layer.getter return width of stage. setter doing nothing.
@@ -9526,20 +9642,26 @@ var Konva = {};
         _validateAdd: function (child) {
             var type = child.getType();
             if (type !== 'Group' && type !== 'Shape') {
-                Konva.Util.error('You may only add groups and shapes to a layer.');
+                Konva.Util.throw('You may only add groups and shapes to a layer.');
             }
         },
         /**
          * get visible intersection shape. This is the preferred
          * method for determining if a point intersects a shape or not
+         * also you may pass optional selector parametr to return ancestor of intersected shape
          * @method
          * @memberof Konva.Layer.prototype
          * @param {Object} pos
          * @param {Number} pos.x
          * @param {Number} pos.y
-         * @returns {Konva.Shape}
+         * @param {String} [selector]
+         * @returns {Konva.Node}
+         * @example
+         * var shape = layer.getIntersection({x: 50, y: 50});
+         * // or if you interested in shape parent:
+         * var group = layer.getIntersection({x: 50, y: 50}, 'Group');
          */
-        getIntersection: function (pos) {
+        getIntersection: function (pos, selector) {
             var obj, i, intersectionOffset, shape;
 
             if (!this.hitGraphEnabled() || !this.isVisible()) {
@@ -9558,7 +9680,9 @@ var Konva = {};
                         y: pos.y + intersectionOffset.y * spiralSearchDistance
                     });
                     shape = obj.shape;
-                    if (shape) {
+                    if (shape && selector) {
+                        return shape.findAncestor(selector, true);
+                    } else if (shape) {
                         return shape;
                     }
                     // we should continue search if we found antialiased pixel
@@ -9606,12 +9730,10 @@ var Konva = {};
                     return {
                         shape: shape
                     };
-                } else {
-                    return {
-                        antialiased: true
-                    };
                 }
-
+                return {
+                    antialiased: true
+                };
             }
                 // antialiased pixel
             else if (p3 > 0) {
@@ -9619,10 +9741,8 @@ var Konva = {};
                     antialiased: true
                 };
             }
-                // empty pixel
-            else {
-                return {};
-            }
+            // empty pixel
+            return {};
         },
         drawScene: function (can, top) {
             var layer = this.getLayer(),
@@ -9700,6 +9820,7 @@ var Konva = {};
         setSize: function (width, height) {
             Konva.BaseLayer.prototype.setSize.call(this, width, height);
             this.hitCanvas.setSize(width, height);
+            return this;
         }
     });
     Konva.Util.extend(Konva.Layer, Konva.BaseLayer);
@@ -9767,7 +9888,7 @@ var Konva = {};
         _validateAdd: function (child) {
             var type = child.getType();
             if (type !== 'Shape') {
-                Konva.Util.error('You may only add shapes to a fast layer.');
+                Konva.Util.throw('You may only add shapes to a fast layer.');
             }
         },
         _setCanvasSize: function (width, height) {
@@ -9862,7 +9983,7 @@ var Konva = {};
         _validateAdd: function (child) {
             var type = child.getType();
             if (type !== 'Group' && type !== 'Shape') {
-                Konva.Util.error('You may only add groups and shapes to groups.');
+                Konva.Util.throw('You may only add groups and shapes to groups.');
             }
         }
     });
@@ -9876,16 +9997,15 @@ var Konva = {};
     var BATCH_DRAW_STOP_TIME_DIFF = 500;
 
     var now = (function () {
-        if (Konva.root.performance && Konva.root.performance.now) {
+        if (Konva.global.performance && Konva.global.performance.now) {
             return function () {
-                return Konva.root.performance.now();
+                return Konva.global.performance.now();
             };
         }
-        else {
-            return function () {
-                return new Date().getTime();
-            };
-        }
+
+        return function () {
+            return new Date().getTime();
+        };
     })();
 
     function FRAF(callback) {
@@ -9893,18 +10013,18 @@ var Konva = {};
     }
 
     var RAF = (function () {
-        return Konva.root.requestAnimationFrame
-            || Konva.root.webkitRequestAnimationFrame
-            || Konva.root.mozRequestAnimationFrame
-            || Konva.root.oRequestAnimationFrame
-            || Konva.root.msRequestAnimationFrame
+        return Konva.global.requestAnimationFrame
+            || Konva.global.webkitRequestAnimationFrame
+            || Konva.global.mozRequestAnimationFrame
+            || Konva.global.oRequestAnimationFrame
+            || Konva.global.msRequestAnimationFrame
             || FRAF;
     })();
 
 
 
     function requestAnimFrame() {
-        return RAF.apply(Konva.root, arguments);
+        return RAF.apply(Konva.global, arguments);
     }
 
     /**
@@ -9950,6 +10070,7 @@ var Konva = {};
          * @method
          * @memberof Konva.Animation.prototype
          * @param {Konva.Layer|Array} [layers] layer(s) to be redrawn.&nbsp; Can be a layer, an array of layers, or null.  Not specifying a node will result in no redraw.
+         * @return {Konva.Animation} this
          */
         setLayers: function (layers) {
             var lays = [];
@@ -9969,11 +10090,13 @@ var Konva = {};
             }
 
             this.layers = lays;
+            return this;
         },
         /**
          * get layers
          * @method
          * @memberof Konva.Animation.prototype
+         * @return {Array} Array of Konva.Layer
          */
         getLayers: function () {
             return this.layers;
@@ -9982,7 +10105,8 @@ var Konva = {};
          * add layer.  Returns true if the layer was added, and false if it was not
          * @method
          * @memberof Konva.Animation.prototype
-         * @param {Konva.Layer} layer
+         * @param {Konva.Layer} layer to add
+         * @return {Bool} true if layer is added to animation, otherwise false
          */
         addLayer: function (layer) {
             var layers = this.layers,
@@ -10002,6 +10126,7 @@ var Konva = {};
          * determine if animation is running or not.  returns true or false
          * @method
          * @memberof Konva.Animation.prototype
+         * @return {Bool} is animation running?
          */
         isRunning: function () {
             var a = Konva.Animation,
@@ -10020,6 +10145,7 @@ var Konva = {};
          * start animation
          * @method
          * @memberof Konva.Animation.prototype
+         * @return {Konva.Animation} this
          */
         start: function () {
             var Anim = Konva.Animation;
@@ -10027,14 +10153,17 @@ var Konva = {};
             this.frame.timeDiff = 0;
             this.frame.lastTime = now();
             Anim._addAnimation(this);
+            return this;
         },
         /**
          * stop animation
          * @method
          * @memberof Konva.Animation.prototype
+         * @return {Konva.Animation} this
          */
         stop: function () {
             Konva.Animation._removeAnimation(this);
+            return this;
         },
         _updateFrameObject: function (time) {
             this.frame.timeDiff = time - this.frame.lastTime;
@@ -10110,12 +10239,14 @@ var Konva = {};
         }
 
         for (key in layerHash) {
+            if (!layerHash.hasOwnProperty(key)) {
+                continue;
+            }
             layerHash[key].draw();
         }
     };
     Konva.Animation._animationLoop = function () {
         var Anim = Konva.Animation;
-
         if (Anim.animations.length) {
             requestAnimFrame(Anim._animationLoop);
             Anim._runFrames();
@@ -10125,21 +10256,16 @@ var Konva = {};
         }
     };
     Konva.Animation._handleAnimation = function () {
-        var that = this;
         if (!this.animRunning) {
             this.animRunning = true;
-            that._animationLoop();
+            this._animationLoop();
         }
-    };
-
-    var moveTo = Konva.Node.prototype.moveTo;
-    Konva.Node.prototype.moveTo = function (container) {
-        moveTo.call(this, container);
     };
 
     /**
      * batch draw
      * @method
+     * @return {Konva.Layer} this
      * @memberof Konva.Base.prototype
      */
     Konva.BaseLayer.prototype.batchDraw = function () {
@@ -10160,17 +10286,20 @@ var Konva = {};
             this.draw();
             this.batchAnim.start();
         }
+        return this;
     };
 
     /**
      * batch draw
      * @method
+     * @return {Konva.Stage} this
      * @memberof Konva.Stage.prototype
      */
     Konva.Stage.prototype.batchDraw = function () {
         this.getChildren().each(function (layer) {
             layer.batchDraw();
         });
+        return this;
     };
 })(Konva);
 
@@ -10392,7 +10521,7 @@ var Konva = {};
         _addAttr: function (key, end) {
             var node = this.node,
                 nodeId = node._id,
-                start, diff, tweenId, n, len;
+                start, diff, tweenId, n, len, trueEnd, trueStart;
 
             // remove conflict from tween map if it exists
             tweenId = Konva.Tween.tweens[nodeId][key];
@@ -10406,10 +10535,27 @@ var Konva = {};
 
             if (Konva.Util._isArray(end)) {
                 diff = [];
-                len = end.length;
-                for (n = 0; n < len; n++) {
-                    diff.push(end[n] - start[n]);
+                len = Math.max(end.length, start.length);
+
+                if (key === 'points' && end.length !== start.length) {
+                    // before tweening points we need to make sure that start.length === end.length
+                    // Konva.Util._prepareArrayForTween thinking that end.length > start.length
+
+                    if (end.length > start.length) {
+                        // so in this case we will increase number of starting points
+                        trueStart = start;
+                        start = Konva.Util._prepareArrayForTween(start, end, node.closed());
+                    } else {
+                        // in this case we will increase number of eding points
+                        trueEnd = end;
+                        end = Konva.Util._prepareArrayForTween(end, start, node.closed());
+                    }
                 }
+
+                for (n = 0; n < len; n++) {
+                    diff.push((end[n]) - (start[n]));
+                }
+
             } else if (colorAttrs.indexOf(key) !== -1) {
                 start = Konva.Util.colorToRGBA(start);
                 var endRGBA = Konva.Util.colorToRGBA(end);
@@ -10425,25 +10571,29 @@ var Konva = {};
 
             Konva.Tween.attrs[nodeId][this._id][key] = {
                 start: start,
-                diff: diff
+                diff: diff,
+                end: end,
+                trueEnd: trueEnd,
+                trueStart: trueStart
             };
             Konva.Tween.tweens[nodeId][key] = this._id;
         },
         _tweenFunc: function (i) {
             var node = this.node,
                 attrs = Konva.Tween.attrs[node._id][this._id],
-                key, attr, start, diff, newVal, n, len;
+                key, attr, start, diff, newVal, n, len, end;
 
             for (key in attrs) {
                 attr = attrs[key];
                 start = attr.start;
                 diff = attr.diff;
+                end = attr.end;
 
                 if (Konva.Util._isArray(start)) {
                     newVal = [];
-                    len = start.length;
+                    len = Math.max(start.length, end.length);
                     for (n = 0; n < len; n++) {
-                        newVal.push(start[n] + (diff[n] * i));
+                        newVal.push((start[n] || 0) + (diff[n] * i));
                     }
                 } else if (colorAttrs.indexOf(key) !== -1) {
                     newVal = 'rgba(' +
@@ -10474,11 +10624,26 @@ var Konva = {};
                 that.anim.stop();
             };
             this.tween.onFinish = function () {
+                var node = that.node;
+
+                // after tweening  points of line we need to set original end
+                var attrs = Konva.Tween.attrs[node._id][that._id];
+                if (attrs.points && attrs.points.trueEnd) {
+                    node.points(attrs.points.trueEnd);
+                }
+
                 if (that.onFinish) {
                     that.onFinish.call(that);
                 }
             };
             this.tween.onReset = function () {
+                var node = that.node;
+                // after tweening  points of line we need to set original start
+                var attrs = Konva.Tween.attrs[node._id][that._id];
+                if (attrs.points && attrs.points.trueStart) {
+                    node.points(attrs.points.trueStart);
+                }
+
                 if (that.onReset) {
                     that.onReset();
                 }
@@ -10853,6 +11018,8 @@ var Konva = {};
                     }
                 }
 
+
+                node.getStage()._setPointerPosition(evt);
                 node._setDragPosition(evt);
                 if (!dd.isDragging) {
                     dd.isDragging = true;
@@ -10899,7 +11066,6 @@ var Konva = {};
         },
         _endDragAfter: function (evt) {
             evt = evt || {};
-
             var dragEndNode = evt.dragEndNode;
 
             if (evt && dragEndNode) {
@@ -11118,12 +11284,16 @@ var Konva = {};
     html.addEventListener('mouseup', Konva.DD._endDragBefore, true);
     html.addEventListener('touchend', Konva.DD._endDragBefore, true);
 
+    html.addEventListener('mousemove', Konva.DD._drag);
+    html.addEventListener('touchmove', Konva.DD._drag);
+
     html.addEventListener('mouseup', Konva.DD._endDragAfter, false);
     html.addEventListener('touchend', Konva.DD._endDragAfter, false);
 
 })();
 
 (function () {
+    'use strict';
     /**
      * Rect constructor
      * @constructor
@@ -11132,10 +11302,6 @@ var Konva = {};
      * @param {Object} config
      * @param {Number} [config.cornerRadius]
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -11166,10 +11332,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -11181,10 +11343,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -11283,6 +11441,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     // the 0.0001 offset fixes a bug in Chrome 27
     var PIx2 = (Math.PI * 2) - 0.0001,
         CIRCLE = 'Circle';
@@ -11295,10 +11454,6 @@ var Konva = {};
      * @param {Object} config
      * @param {Number} config.radius
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -11329,10 +11484,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -11344,10 +11495,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -11452,6 +11599,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     // the 0.0001 offset fixes a bug in Chrome 27
     var PIx2 = (Math.PI * 2) - 0.0001,
         ELLIPSE = 'Ellipse';
@@ -11463,10 +11611,6 @@ var Konva = {};
      * @param {Object} config
      * @param {Object} config.radius defines x and y radius
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -11497,10 +11641,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -11512,10 +11652,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -11665,6 +11801,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     // the 0.0001 offset fixes a bug in Chrome 27
     var PIx2 = (Math.PI * 2) - 0.0001;
     /**
@@ -11676,10 +11813,6 @@ var Konva = {};
      * @param {Number} config.outerRadius
      * @param {Boolean} [config.clockwise]
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -11710,10 +11843,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -11725,10 +11854,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -11856,6 +11981,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Wedge constructor
      * @constructor
@@ -11865,10 +11991,6 @@ var Konva = {};
      * @param {Number} config.radius
      * @param {Boolean} [config.clockwise]
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -11899,10 +12021,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -11914,10 +12032,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -12067,6 +12181,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Arc constructor
      * @constructor
@@ -12077,10 +12192,6 @@ var Konva = {};
      * @param {Number} config.outerRadius
      * @param {Boolean} [config.clockwise]
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -12111,10 +12222,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -12126,10 +12233,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -12294,7 +12397,7 @@ var Konva = {};
 })();
 
 (function () {
-
+    'use strict';
     // CONSTANTS
     var IMAGE = 'Image';
 
@@ -12307,10 +12410,6 @@ var Konva = {};
      * @param {Image} config.image
      * @param {Object} [config.crop]
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -12341,10 +12440,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -12356,10 +12451,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -12599,7 +12690,9 @@ var Konva = {};
     };
 })();
 
+/*eslint-disable max-depth */
 (function () {
+    'use strict';
     // constants
     var AUTO = 'auto',
         //CANVAS = 'canvas',
@@ -12643,10 +12736,6 @@ var Konva = {};
      * @param {Number} [config.lineHeight] default is 1
      * @param {String} [config.wrap] can be word, char, or none. Default is word
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -12677,10 +12766,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -12692,10 +12777,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -13169,6 +13250,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Line constructor.&nbsp; Lines are defined by an array of points and
      *  a tension
@@ -13181,10 +13263,6 @@ var Konva = {};
      *   The default is 0
      * @param {Boolean} [config.closed] defines whether or not the line shape is closed, creating a polygon or blob
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -13215,10 +13293,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -13230,10 +13304,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -13343,8 +13413,7 @@ var Konva = {};
         _getTensionPoints: function () {
             if (this.getClosed()) {
                 return this._getTensionPointsClosed();
-            }
-            else {
+            } else {
                 return Konva.Util._expandPoints(this.getPoints(), this.getTension());
             }
         },
@@ -13408,11 +13477,12 @@ var Konva = {};
             }
             var minX = points[0];
             var maxX = points[0];
-            var minY = points[0];
-            var maxY = points[0];
+            var minY = points[1];
+            var maxY = points[1];
             var x, y;
             for (var i = 0; i < points.length / 2; i++) {
-                x = points[i * 2]; y = points[i * 2 + 1];
+                x = points[i * 2];
+                y = points[i * 2 + 1];
                 minX = Math.min(minX, x);
                 maxX = Math.max(maxX, x);
                 minY = Math.min(minY, y);
@@ -13490,6 +13560,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Sprite constructor
      * @constructor
@@ -13501,10 +13572,6 @@ var Konva = {};
      * @param {Integer} [config.frameIndex] animation frame index
      * @param {Image} config.image image object
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -13535,10 +13602,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -13550,10 +13613,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -13665,6 +13724,13 @@ var Konva = {};
                 width = set[ix4 + 2],
                 height = set[ix4 + 3],
                 image = this.getImage();
+
+            if (this.hasFill() || this.hasStroke()) {
+                context.beginPath();
+                context.rect(0, 0, width, height);
+                context.closePath();
+                context.fillStrokeShape(this);
+            }
 
             if (image) {
                 if (offsets) {
@@ -13910,8 +13976,9 @@ var Konva = {};
     Konva.Collection.mapMethods(Konva.Sprite);
 })();
 
-/*eslint-disable  no-shadow*/
+/*eslint-disable  no-shadow, max-len, max-depth */
 (function () {
+    'use strict';
     /**
      * Path constructor.
      * @author Jason Follas
@@ -13921,10 +13988,6 @@ var Konva = {};
      * @param {Object} config
      * @param {String} config.data SVG data string
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -13955,10 +14018,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -13970,10 +14029,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -14642,6 +14697,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     var EMPTY_STRING = '',
         //CALIBRI = 'Calibri',
         NORMAL = 'normal';
@@ -14660,10 +14716,6 @@ var Konva = {};
      * @param {String} config.text
      * @param {String} config.data SVG data string
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -14694,10 +14746,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -14709,10 +14757,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -15164,6 +15208,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * RegularPolygon constructor.&nbsp; Examples include triangles, squares, pentagons, hexagons, etc.
      * @constructor
@@ -15173,10 +15218,6 @@ var Konva = {};
      * @param {Number} config.sides
      * @param {Number} config.radius
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -15207,10 +15248,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -15222,10 +15259,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -15357,6 +15390,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Star constructor
      * @constructor
@@ -15367,10 +15401,6 @@ var Konva = {};
      * @param {Number} config.innerRadius
      * @param {Number} config.outerRadius
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -15401,10 +15431,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -15416,10 +15442,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -15572,6 +15594,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     // constants
     var ATTR_CHANGE_LIST = ['fontFamily', 'fontSize', 'fontStyle', 'padding', 'lineHeight', 'text'],
         CHANGE_KONVA = 'Change.konva',
@@ -15776,10 +15799,14 @@ var Konva = {};
                 pointerDirection = this.getPointerDirection(),
                 pointerWidth = this.getPointerWidth(),
                 pointerHeight = this.getPointerHeight(),
-                cornerRadius = this.getCornerRadius();
+                cornerRadius = Math.min(this.getCornerRadius(), width / 2, height / 2);
 
             context.beginPath();
-            context.moveTo(0, 0);
+            if (!cornerRadius) {
+                context.moveTo(0, 0);
+            } else {
+                context.moveTo(cornerRadius, 0);
+            }
 
             if (pointerDirection === UP) {
                 context.lineTo((width - pointerWidth) / 2, 0);
@@ -15938,6 +15965,7 @@ var Konva = {};
 })();
 
 (function () {
+    'use strict';
     /**
      * Arrow constructor
      * @constructor
@@ -15950,10 +15978,6 @@ var Konva = {};
      * @param {Number} config.pointerLength
      * @param {Number} config.pointerWidth
      * @param {String} [config.fill] fill color
-     * @param {Integer} [config.fillRed] set fill red component
-     * @param {Integer} [config.fillGreen] set fill green component
-     * @param {Integer} [config.fillBlue] set fill blue component
-     * @param {Integer} [config.fillAlpha] set fill alpha component
      * @param {Image} [config.fillPatternImage] fill pattern image
      * @param {Number} [config.fillPatternX]
      * @param {Number} [config.fillPatternY]
@@ -15984,10 +16008,6 @@ var Konva = {};
      * @param {Boolean} [config.fillEnabled] flag which enables or disables the fill.  The default value is true
      * @param {String} [config.fillPriority] can be color, linear-gradient, radial-graident, or pattern.  The default value is color.  The fillPriority property makes it really easy to toggle between different fill types.  For example, if you want to toggle between a fill color style and a fill pattern style, simply set the fill property and the fillPattern properties, and then use setFillPriority('color') to render the shape with a color fill, or use setFillPriority('pattern') to render the shape with the pattern fill configuration
      * @param {String} [config.stroke] stroke color
-     * @param {Integer} [config.strokeRed] set stroke red component
-     * @param {Integer} [config.strokeGreen] set stroke green component
-     * @param {Integer} [config.strokeBlue] set stroke blue component
-     * @param {Integer} [config.strokeAlpha] set stroke alpha component
      * @param {Number} [config.strokeWidth] stroke width
      * @param {Boolean} [config.strokeHitEnabled] flag which enables or disables stroke hit region.  The default is true
      * @param {Boolean} [config.perfectDrawEnabled] flag which enables or disables using buffer canvas.  The default is true
@@ -15999,10 +16019,6 @@ var Konva = {};
      * @param {String} [config.lineCap] can be butt, round, or sqare.  The default
      *  is butt
      * @param {String} [config.shadowColor]
-     * @param {Integer} [config.shadowRed] set shadow color red component
-     * @param {Integer} [config.shadowGreen] set shadow color green component
-     * @param {Integer} [config.shadowBlue] set shadow color blue component
-     * @param {Integer} [config.shadowAlpha] set shadow color alpha component
      * @param {Number} [config.shadowBlur]
      * @param {Object} [config.shadowOffset] object with x and y component
      * @param {Number} [config.shadowOffsetX]
@@ -16052,6 +16068,7 @@ var Konva = {};
             this.className = 'Arrow';
         },
         _sceneFunc: function (ctx) {
+            Konva.Line.prototype._sceneFunc.apply(this, arguments);
             var PI2 = Math.PI * 2;
             var points = this.points();
             var n = points.length;
@@ -16078,14 +16095,12 @@ var Konva = {};
                 dy = points[3] - points[1];
                 ctx.rotate((Math.atan2(-dy, -dx) + PI2) % PI2);
                 ctx.moveTo(0, 0);
-                ctx.lineTo(-10, 6);
-                ctx.lineTo(-10, -6);
+                ctx.lineTo(-length, width / 2);
+                ctx.lineTo(-length, -width / 2);
                 ctx.closePath();
                 ctx.restore();
             }
-
             ctx.fillStrokeShape(this);
-            Konva.Line.prototype._sceneFunc.apply(this, arguments);
         }
     };
 
@@ -16144,5 +16159,3 @@ var Konva = {};
     Konva.Collection.mapMethods(Konva.Arrow);
 
 })();
-
-//# sourceURL=/js/konva/konva.js

@@ -267,9 +267,7 @@
 
         // Build a list of required tabs from all of the loaded widgets
         jQuery.each(AGRacingWidgets.getAvailableWidgets(), function (index, widget) {
-            var widgetClass = 'AGRacing' + widget.toUpperCase() + 'Widget';
-
-            var widgetController = new window[widgetClass]();
+            var widgetController = new window[widget.widgetClass]();
             var widgetTab = widgetController.tab;
             if (tabs[widgetTab] === undefined) {
                 tabs[widgetTab] = {};
@@ -357,8 +355,7 @@
         var gameName = gameInfo.GameName;
 
         jQuery.each(AGRacingWidgets.getAvailableWidgets(), function (index, widget) {
-            var widgetClass = 'AGRacing' + widget.toUpperCase() + 'Widget';
-            var widgetController = new window[widgetClass]();
+            var widgetController = new window[widget.widgetClass]();
             var id = '#' + widgetController.getProperties().type + 'widget';
 
             if (widgetController.supports !== undefined) {

@@ -55,7 +55,7 @@ var AGDATAREADER = function () {
         _usingWebSockets = false;
     }
 
-    _usingWebSockets = false;
+   // _usingWebSockets = false;
 
     _pollTimer = setInterval(pollTimer, 1000);
 

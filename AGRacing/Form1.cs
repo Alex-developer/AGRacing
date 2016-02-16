@@ -11,8 +11,7 @@ using AGRacing.WebServices;
 using AGRacing.Games;
 using AGRacing.GameData;
 using AGRacing.Monitoring;
-using AGRacing.GameData.GameState;
-using AGRacing.ProjectCars.GameData;
+using AGRacing.GameData.Telemetry;
 using System.Runtime.InteropServices;
 
 namespace AGRacing
@@ -23,7 +22,7 @@ namespace AGRacing
         private Thread gameReaderThread;
         private GameExecutableData gameData;
         private bool monitoringForGames = true;
-        private GameState gameState;
+        private TelemetryData gameState;
         private WebServer httpServer;
         private IPAddress ipAddress;
         private int webServerPort = Properties.Settings.Default.WebServerPort;
@@ -37,7 +36,7 @@ namespace AGRacing
             InitializeComponent();
 
             gameData = new GameExecutableData();
-            gameState = new GameState() { Connected = false };
+            gameState = new TelemetryData() { Connected = false };
 
             ipAddress = GetLocalIpAddress();
 
@@ -199,8 +198,8 @@ namespace AGRacing
             }
             UpdateUserInterface();
         }
-        
-        private void GameReaderThread(GameState gameState)
+
+        private void GameReaderThread(TelemetryData gameState)
         {
             bool fileFound = false;
             

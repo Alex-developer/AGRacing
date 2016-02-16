@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
-using AGRacing.GameData.GameState;
+using AGRacing.GameData.Telemetry;
 using AGRacing.GameData.TrackData;
 using AGRacing.WebServices.Services;
 using WebSocketSharp.Server;
@@ -103,7 +103,7 @@ namespace AGRacing.WebServices
         private HttpListener listener;
         private int port;
         private IPAddress ipAddress;
-        private GameState gameState;
+        private TelemetryData gameState;
 
         private WebSocketSharp.Server.HttpServer sd;
 
@@ -123,12 +123,12 @@ namespace AGRacing.WebServices
         /// </summary>
         /// <param name="path">Directory path to serve.</param>
         /// <param name="port">Port of the server.</param>
-        public WebServer(string path, int port, GameState gameState, IPAddress ipAddress)
+        public WebServer(string path, int port, TelemetryData gameState, IPAddress ipAddress)
         {
             this.Initialize(path, port, gameState, ipAddress);
         }
-        
-        private void Initialize(string path, int port, GameState gameState, IPAddress ipAddress)
+
+        private void Initialize(string path, int port, TelemetryData gameState, IPAddress ipAddress)
         {
             this.gameState = gameState;
             this.rootDirectory = path;
@@ -139,9 +139,8 @@ namespace AGRacing.WebServices
             sd.RootPath = path + "\\";
             sd.AddWebSocketService<ConnectedService>("/Connected", () => new ConnectedService(gameState));
             sd.AddWebSocketService<CarDataService>("/Car", () => new CarDataService(gameState));
-            sd.AddWebSocketService<CarPosService>("/CarPos", () => new CarPosService(gameState));
             sd.AddWebSocketService<TimingDataService>("/Timing", () => new TimingDataService(gameState));
-            sd.AddWebSocketService<EnvironmentDataService>("/Environment", () => new EnvironmentDataService(gameState));
+            sd.AddWebSocketService<SessionDataService>("/Environment", () => new SessionDataService(gameState));
             sd.AddWebSocketService<RecordingService>("/Recording", () => new RecordingService(gameState));
             sd.Start();
 
@@ -218,15 +217,15 @@ namespace AGRacing.WebServices
                                 haveResult = true;
                                 break;
                             case "CarPos":
-                                result = DataHandler.CarPos(gameState);
+                             //   result = DataHandler.CarPos(gameState);
                                 haveResult = true;
                                 break;
                             case "Environment":
-                                result = DataHandler.Environment(gameState);
+                                result = DataHandler.Sessions(gameState);
                                 haveResult = true;
                                 break;
                             case "Timing":
-                                result = DataHandler.Timing(gameState);
+                              //  result = DataHandler.Timing(gameState);
                                 haveResult = true;
                                 break;
                             case "StartRecording":

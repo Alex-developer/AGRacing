@@ -5,15 +5,18 @@ using System.Text;
 using System.Collections.Generic;
 using System.Web;
 using AGRacing.WebServices;
-using AGRacing.GameData.GameState;
+using AGRacing.GameData.Telemetry;
 using AGRacing.GameData.TrackData;
 using AGRacing.GameData.TrackData.TrackAnalysis;
+using AGRacing.GameData.GameState.Car;
+using AGRacing.GameData.Telemetry;
+using AGRacing.GameData.Telemetry.Sessions;
 
 namespace AGRacing.WebServices.Services
 {
     public static class DataHandler
     {
-        private static bool DataValid(GameState gameState)
+        private static bool DataValid(TelemetryData gameState)
         {
             bool dataValid = false;
 
@@ -24,44 +27,24 @@ namespace AGRacing.WebServices.Services
             return dataValid;
         }
 
-        public static GameInfo Connected(GameState gameState)
+        public static GameInfo Connected(TelemetryData gameState)
         {
-            GameInfo GameInformation = new GameInfo();
-            GameInformation.Connected = false;
+            GameInfo gameInformation = new GameInfo();
+            gameInformation.Connected = false;
 
             if (DataValid(gameState))
             {
-                GameInformation.Connected = true;
-                GameInformation.GameName = gameState.Game.GameName();
+                gameInformation.Connected = true;
+                gameInformation.GameName = gameState.Game.GameName();
             }
-            return GameInformation;
+            return gameInformation;
         }
 
-        public static GameState AllData(GameState gameState)
+
+
+        public static CarData CarState(TelemetryData gameState)
         {
-            GameState result = null;
-
-            if (DataValid(gameState))
-            {
-                result = gameState;
-            }
-            return result;
-        }
-
-        public static List<TrackPos> CarPos(GameState gameState)
-        {
-            List<TrackPos> trackPos = null;
-
-            if (DataValid(gameState))
-            {
-                //      trackPos = gameState.TrackPos;
-            }
-            return trackPos;
-        }
-
-        public static CarState CarState(GameState gameState)
-        {
-            CarState result = null;
+            CarData result = null;
 
             if (DataValid(gameState))
             {
@@ -70,29 +53,29 @@ namespace AGRacing.WebServices.Services
             return result;
         }
 
-        public static AGRacing.GameData.GameState.Environment Environment(GameState gameState)
+        public static EventSessions Sessions(TelemetryData gameState)
         {
-            AGRacing.GameData.GameState.Environment result = null;
+            EventSessions result = null;
 
             if (DataValid(gameState))
             {
-                result = gameState.Environment;
+                result = gameState.Sessions;
             }
             return result;
         }
 
-        public static Timing Timing(GameState gameState)
+    /**    public static Timing Timing(TelemetryData gameState)
         {
             Timing result = null;
 
             if (DataValid(gameState))
             {
-                result = gameState.Timing;
+          //      result = gameState.Timing;
             }
             return result;
         }
-
-        public static bool StartRecording(GameState gameState)
+**/
+        public static bool StartRecording(TelemetryData gameState)
         {
             bool result = true;
 
@@ -103,7 +86,7 @@ namespace AGRacing.WebServices.Services
             return result;
         }
 
-        public static bool StopRecording(GameState gameState)
+        public static bool StopRecording(TelemetryData gameState)
         {
             bool result = true;
 
@@ -114,19 +97,19 @@ namespace AGRacing.WebServices.Services
             return result;
         }
 
-        public static TrackAnalysis AnalyseRecording(GameState gameState, List<string> urlBits)
+        public static TrackAnalysis AnalyseRecording(TelemetryData gameState, List<string> urlBits)
         {
             TrackAnalysis result = null;
 
             if (DataValid(gameState))
             {
                 gameState.Game.AnalyseRecordingForTracks();
-                result = gameState.TrackAnalysis;
+            //    result = gameState.TrackAnalysis;
             }
             return result;
         }
 
-        public static Track LoadAnalysedTrack(GameState gameState, List<string> urlBits)
+        public static Track LoadAnalysedTrack(TelemetryData gameState, List<string> urlBits)
         {
             Track track = null;
 
@@ -139,7 +122,7 @@ namespace AGRacing.WebServices.Services
             return track;
         }
 
-        public static void SaveTrack(GameState gameState, List<string> urlBits)
+        public static void SaveTrack(TelemetryData gameState, List<string> urlBits)
         {
             if (urlBits.Count == 3)
             {
@@ -151,14 +134,14 @@ namespace AGRacing.WebServices.Services
 
         }
 
-        public static Track LoadTrack(GameState gameState)
+        public static Track LoadTrack(TelemetryData gameState)
         {
             Track track = gameState.Game.LoadTrack();
 
             return track;
         }
 
-        public static List<String> ListDashPages(GameState gameState)
+        public static List<String> ListDashPages(TelemetryData gameState)
         {
             List<String> dashPages = new List<String>();
 
@@ -174,7 +157,7 @@ namespace AGRacing.WebServices.Services
             return dashPages;
         }
 
-        public static string LoadPage(GameState gameState, List<string> urlBits)
+        public static string LoadPage(TelemetryData gameState, List<string> urlBits)
         {
             string dashPage = "";
             string fileName = Directory.GetCurrentDirectory() + "\\Pages\\" + gameState.Game.GameName() + "\\" + urlBits[1] + ".page";
@@ -188,7 +171,7 @@ namespace AGRacing.WebServices.Services
             return dashPage;
         }
 
-        public static string SavePage(GameState gameState, List<string> urlBits, string data)
+        public static string SavePage(TelemetryData gameState, List<string> urlBits, string data)
         {
             if (DataValid(gameState))
             {

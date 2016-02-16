@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
-using AGRacing.GameData.GameState;
+using AGRacing.GameData.Telemetry;
 using AGRacing.GameData.TrackData;
 
 
@@ -15,7 +15,7 @@ namespace AGRacing.Games
             return "";    
         }
 
-        public virtual void StartGameReader(GameState gameState)
+        public virtual void StartGameReader(TelemetryData gameState)
         {
         }
         public virtual void SaveTelemetry()

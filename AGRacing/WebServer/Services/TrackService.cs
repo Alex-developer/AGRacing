@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using WebSocketSharp;
-using AGRacing.GameData.GameState;
+using AGRacing.GameData.Telemetry;
 using AGRacing.GameData.TrackData;
 using System.Web.Script.Serialization;
 
@@ -9,7 +9,8 @@ namespace AGRacing.WebServices.Services
 {
     public class TrackService : BaseService
     {
-        public TrackService(GameState gameState) : base(gameState)
+        public TrackService(TelemetryData gameState)
+            : base(gameState)
         {
         }
 
@@ -20,11 +21,11 @@ namespace AGRacing.WebServices.Services
             switch ((string)request.action)
             {
                 case "save":
-                    GameState.Game.SaveTrack(request.name, request.lap);
+                    Telemetry.Game.SaveTrack(request.name, request.lap);
                     json = new JavaScriptSerializer().Serialize(true);
                     break;
                 case "load":
-                    Track track = GameState.Game.LoadTrack();
+                    Track track = Telemetry.Game.LoadTrack();
                     json = new JavaScriptSerializer().Serialize(track);
                     break;
             }

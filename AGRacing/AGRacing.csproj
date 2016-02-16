@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AGRacing</RootNamespace>
     <AssemblyName>AGRacing</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -52,22 +53,27 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="GameData\Connected.cs" />
+    <Compile Include="GameData\Telemetry\Sessions\SessionDrivers\Car.cs" />
+    <Compile Include="GameData\Telemetry\Sessions\SessionDrivers\Cars.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\Connected.cs" />
     <Compile Include="GameData\GameExecutableData.cs" />
-    <Compile Include="GameData\GameState\Acceleration.cs" />
-    <Compile Include="GameData\GameState\CarState.cs" />
-    <Compile Include="GameData\GameState\Environment.cs" />
-    <Compile Include="GameData\GameState\FlagReason.cs" />
-    <Compile Include="GameData\GameState\Flags.cs" />
-    <Compile Include="GameData\GameState\GameState.cs" />
-    <Compile Include="GameData\GameState\PlayerLap.cs" />
-    <Compile Include="GameData\GameState\PlayerSector.cs" />
-    <Compile Include="GameData\GameState\PlayerState.cs" />
-    <Compile Include="GameData\GameState\RaceState.cs" />
-    <Compile Include="GameData\GameState\SessionType.cs" />
-    <Compile Include="GameData\GameState\Timing.cs" />
-    <Compile Include="GameData\GameState\TrackPos.cs" />
-    <Compile Include="GameData\PlayerInfo.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\Acceleration.cs" />
+    <Compile Include="GameData\Telemetry\Car\CarData.cs" />
+    <Compile Include="GameData\Telemetry\Car\Engine.cs" />
+    <Compile Include="GameData\Telemetry\Environment\EnvironmentData.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\FlagReason.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\Flags.cs" />
+    <Compile Include="GameData\Telemetry\TelemetryData.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\PlayerLap.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\PlayerSector.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\PlayerState.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\RaceState.cs" />
+    <Compile Include="GameData\Telemetry\Sessions\Session.cs" />
+    <Compile Include="GameData\Telemetry\Sessions\EventSessions.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\SessionType.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\Timing.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\TrackPos.cs" />
+    <Compile Include="GameData\Telemetry\XOldStuff\PlayerInfo.cs" />
     <Compile Include="GameData\TrackData\Track.cs" />
     <Compile Include="GameData\TrackData\TrackAnalysis\AnalysisLap.cs" />
     <Compile Include="GameData\TrackData\TrackAnalysis\AnalysisDriver.cs" />
@@ -76,16 +82,11 @@
     <Compile Include="GameData\TrackData\TrackPoint.cs" />
     <Compile Include="Games\GameBase.cs" />
     <Compile Include="Games\IRacing\IRacing.cs" />
-    <Compile Include="Games\ProjectCars\DataReaders\DataReaderBase.cs" />
-    <Compile Include="Games\ProjectCars\DataReaders\FileReader.cs" />
-    <Compile Include="Games\ProjectCars\DataReaders\GameReader.cs" />
-    <Compile Include="WebServer\Services\AllDataService.cs" />
     <Compile Include="WebServer\Services\BaseService.cs" />
     <Compile Include="WebServer\Services\CarDataService.cs" />
-    <Compile Include="WebServer\Services\CarPosService.cs" />
     <Compile Include="WebServer\Services\ConnectedService.cs" />
     <Compile Include="WebServer\Services\DataHandler.cs" />
-    <Compile Include="WebServer\Services\EnvironmentDataService.cs" />
+    <Compile Include="WebServer\Services\SessionDataService.cs" />
     <Compile Include="WebServer\Services\GameInfo.cs" />
     <Compile Include="WebServer\Services\RecordingService.cs" />
     <Compile Include="WebServer\Services\TimingDataService.cs" />
@@ -93,27 +94,6 @@
     <Compile Include="WebServer\WebServer.cs" />
     <Compile Include="Monitoring\ProcessMonitor.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Games\ProjectCars\GameData\ECarFlags.cs" />
-    <Compile Include="Games\ProjectCars\GameData\ECrashDamageState.cs" />
-    <Compile Include="Games\ProjectCars\GameData\EGameState.cs" />
-    <Compile Include="Games\ProjectCars\GameData\EHeaderVersion.cs" />
-    <Compile Include="Games\ProjectCars\GameData\EMaxPart.cs" />
-    <Compile Include="Games\ProjectCars\GameData\eSessionState.cs" />
-    <Compile Include="Games\ProjectCars\GameData\EStringLenMax.cs" />
-    <Compile Include="Games\ProjectCars\GameData\ETerrain.cs" />
-    <Compile Include="Games\ProjectCars\GameData\ETyreFlags.cs" />
-    <Compile Include="Games\ProjectCars\GameData\ETyres.cs" />
-    <Compile Include="Games\ProjectCars\GameData\EVector.cs" />
-    <Compile Include="Games\ProjectCars\GameData\MCurrentSector.cs" />
-    <Compile Include="Games\ProjectCars\GameData\MHighestFlagColour.cs" />
-    <Compile Include="Games\ProjectCars\GameData\mHighestFlagReason.cs" />
-    <Compile Include="Games\ProjectCars\GameData\mPitMode.cs" />
-    <Compile Include="Games\ProjectCars\GameData\MPitSchedule.cs" />
-    <Compile Include="Games\ProjectCars\GameData\MRaceState.cs" />
-    <Compile Include="Games\ProjectCars\GameData\ParticipantInfo.cs" />
-    <Compile Include="Games\ProjectCars\GameData\ProjectCarsApi.cs" />
-    <Compile Include="Games\ProjectCars\GameData\SmString.cs" />
-    <Compile Include="Games\ProjectCars\ProjectCars.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -126,6 +106,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -149,7 +130,6 @@
     <None Include="Web\js\colourpicker\colpick.jquery.json" />
     <None Include="Web\js\colourpicker\LICENSE" />
     <None Include="Web\js\colourpicker\README.md" />
-    <None Include="Web\js\foundation\icons\.DS_Store" />
     <None Include="Web\js\foundation\icons\.fontcustom-data">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -386,6 +366,9 @@
     <Content Include="Web\images\up.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Web\images\userimages\dashboard.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\images\wheel.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -437,6 +420,9 @@
     <Content Include="Web\images\widgets\gforce.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Web\images\widgets\image.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\images\widgets\label.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -477,195 +463,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\js\dashboards.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\jquery-bigtext\jquery-bigtext.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\jquery-ui\external\jquery\jquery.js" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_flat_30_cccccc_40x100.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_flat_50_5c5c5c_40x100.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_glass_20_555555_1x400.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_glass_40_0078a3_1x400.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_glass_40_ffc73d_1x400.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_gloss-wave_25_333333_500x100.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_highlight-soft_80_eeeeee_1x100.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_inset-soft_25_000000_1x100.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-bg_inset-soft_30_f58400_1x100.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-icons_222222_256x240.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-icons_4b8e0b_256x240.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-icons_a83300_256x240.png" />
-    <Content Include="Web\js\jquery-ui\images\ui-icons_cccccc_256x240.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\jquery-ui\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="Web\js\jquery-ui\index.html" />
-    <Content Include="Web\js\jquery-ui\jquery-ui.css" />
-    <Content Include="Web\js\jquery-ui\jquery-ui.js" />
-    <Content Include="Web\js\jquery-ui\jquery-ui.min.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\jquery-ui\jquery-ui.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\jquery-ui\jquery-ui.structure.css" />
-    <Content Include="Web\js\jquery-ui\jquery-ui.structure.min.css" />
-    <Content Include="Web\js\jquery-ui\jquery-ui.theme.css" />
-    <Content Include="Web\js\jquery-ui\jquery-ui.theme.min.css" />
-    <Content Include="Web\js\jquery.doubletap\jquery.doubletap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\jquery.ui.touch-punch\jquery.ui.touch-punch.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\js-cookie\js.cookie.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\pages\dash\editor.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\pages\dash\left.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\pages\home\images\line.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\pages\telemetry\telemetry.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\pages\telemetry\telemetry.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\pages\telemetry\telemetry.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\proto.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\settings.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\carclass.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\carname.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\enginewarnings.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\flag.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\flagreason.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\framerate.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\worldfastestsectors.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\personalfastestsectors.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\fastestsectors.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\worldbestlap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\personalbestlap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\splitbehind.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\splitahead.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\split.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\racestate.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\timeleft.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\tyres.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\lapinvalidated.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\damage.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\wheel.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\group.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\acceleration.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\rpmled.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\throttle.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\trackmap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\currentlap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\lastlap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\bestlap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\gear.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\label.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\ambienttemp.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\top5.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\tracktemp.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\trackname.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\sessiontype.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\position.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\speed.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\rpm.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\index.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\datareader.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\js\foundation\css\foundation.css">
@@ -1588,20 +1385,225 @@
     <Content Include="Web\js\foundation\js\foundation\foundation.topbar.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\js\foundation\js\vendor\fastclick.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\foundation\js\vendor\jquery.cookie.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Web\js\foundation\js\vendor\fastclick.js" />
+    <Content Include="Web\js\foundation\js\vendor\jquery.cookie.js" />
     <Content Include="Web\js\foundation\js\vendor\jquery.js" />
-    <Content Include="Web\js\foundation\js\vendor\modernizr.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\foundation\js\vendor\placeholder.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Web\js\foundation\js\vendor\modernizr.js" />
+    <Content Include="Web\js\foundation\js\vendor\placeholder.js" />
     <Content Include="Web\js\foundation\robots.txt" />
+    <Content Include="Web\js\jquery-bigtext\jquery-bigtext.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\jquery-ui\external\jquery\jquery.js" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_flat_30_cccccc_40x100.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_flat_50_5c5c5c_40x100.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_glass_20_555555_1x400.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_glass_40_0078a3_1x400.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_glass_40_ffc73d_1x400.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_gloss-wave_25_333333_500x100.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_highlight-soft_80_eeeeee_1x100.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_inset-soft_25_000000_1x100.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-bg_inset-soft_30_f58400_1x100.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-icons_222222_256x240.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-icons_4b8e0b_256x240.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-icons_a83300_256x240.png" />
+    <Content Include="Web\js\jquery-ui\images\ui-icons_cccccc_256x240.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\jquery-ui\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Web\js\jquery-ui\index.html" />
+    <Content Include="Web\js\jquery-ui\jquery-ui.css" />
+    <Content Include="Web\js\jquery-ui\jquery-ui.js" />
+    <Content Include="Web\js\jquery-ui\jquery-ui.min.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\jquery-ui\jquery-ui.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\jquery-ui\jquery-ui.structure.css" />
+    <Content Include="Web\js\jquery-ui\jquery-ui.structure.min.css" />
+    <Content Include="Web\js\jquery-ui\jquery-ui.theme.css" />
+    <Content Include="Web\js\jquery-ui\jquery-ui.theme.min.css" />
+    <Content Include="Web\js\jquery.doubletap\jquery.doubletap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\jquery.ui.touch-punch\jquery.ui.touch-punch.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\js-cookie\js.cookie.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\pages\dash\editor.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\pages\dash\left.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\pages\home\images\line.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\pages\telemetry\telemetry.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\pages\telemetry\telemetry.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\pages\telemetry\telemetry.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\proto.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\settings.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\carclass.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\carname.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\oiltemp.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\warnings\revlimiteractive.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\warnings\enginestalledwarning.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\warnings\oilpressurewarning.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\warnings\fuelpressurewarning.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\warnings\watertempwarning.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\misc\image.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\flag.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\flagreason.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\framerate.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\session\trackvarient.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\timing\timingscreen.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\worldfastestsectors.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\personalfastestsectors.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\fastestsectors.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\worldbestlap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\timing\bestlaptime.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\splitbehind.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\splitahead.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\split.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\racestate.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\timeleft.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\tyres.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\lapinvalidated.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\damage.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\wheel.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\misc\group.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\car\acceleration.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\rpmled.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\throttle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\trackmap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\currentlap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\lastlap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\bestlap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\gear.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\misc\label.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\session\ambienttemp.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\timing\top5.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\session\tracktemp.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\session\trackname.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\session\sessiontype.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\timing\position.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\car\speed.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\rpm.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\datareader.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\js\jquery\jquery.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -2599,26 +2601,28 @@
     <None Include="Web\js\widgets\widgets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Web\js\widgets\fuel.js">
+    <Content Include="Web\js\widgets\car\fuel.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\js\widgets\brake.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\js\widgets\watertemp.js">
+    <Content Include="Web\js\widgets\engine\watertemp.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\test.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Games\AssetoCorsa\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\iRacingSdkWrapper\iRacingSdkWrapper\iRacingSdkWrapper.csproj">
       <Project>{d6db568b-35b3-49eb-8cb3-e4e5f1424247}</Project>
       <Name>iRacingSdkWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\iRacingSdkWrapper\iRacingSimulator\iRacingSimulator.csproj">
+      <Project>{1765e7db-bee4-4324-a396-923d80b61ea0}</Project>
+      <Name>iRacingSimulator</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\websocket-sharp\websocket-sharp\websocket-sharp.csproj">
       <Project>{b357bac7-529e-4d81-a0d2-71041b19c8de}</Project>

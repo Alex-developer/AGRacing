@@ -126,7 +126,7 @@
             var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
             var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
-            if (hours < 10) {
+        /*    if (hours < 10) {
                 hours = "0" + hours;
             }
             if (minutes < 10) {
@@ -134,13 +134,23 @@
             }
             if (seconds < 10) {
                 seconds = "0" + seconds;
-            }
+            }*/
+
+            hours = pad(hours, 2);
+            minutes = pad(minutes, 2);
+            seconds = pad(seconds, 2);
 
             var rem = time - sec_num;
             rem = Math.ceil(((rem < 1.0) ? rem : (rem % Math.floor(rem))) * 1000);
+            rem = pad(rem, 3);
             time = minutes + ':' + seconds + ':' + rem;
         }
         return time;
+    }
+
+    function pad(num, size) {
+        var s = "000000000" + num;
+        return s.substr(s.length - size);
     }
 
     function startEdit() {

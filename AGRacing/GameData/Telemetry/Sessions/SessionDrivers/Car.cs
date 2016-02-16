@@ -16,6 +16,7 @@ namespace AGRacing.GameData.Telemetry.Sessions.SessionDrivers
 
         public string BestLapTime { get; set; }
         public string LastLapTime { get; set; }
+        public string CurrentLapTime { get; set; }
         public string Time { get; set; }
         public string LapsComplete { get; set; }
 

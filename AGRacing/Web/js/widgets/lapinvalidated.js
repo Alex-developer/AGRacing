@@ -4,6 +4,8 @@
     var _name = 'Invalid';
     var _icon = '/images/widgets/error.png';
     var _labels = ['Invalid Lap', 'Lap Invalidated'];
+    var _tab = 'Timing';
+    var _supports = ['Project Cars'];
 
     var _initialised = false;
     var _el = null;
@@ -23,8 +25,12 @@
     var _messages = ['cardata'];
 
     function init(element, properties) {
-        _el = element;
-        _properties = properties;
+        if (element !== undefined) {
+            _el = element;
+        }
+        if (properties !== undefined) {
+            _properties = properties;
+        }
         buildUI();
     }
 
@@ -83,14 +89,15 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Timing',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
         },
 
-        init: function (element, settings) {
-            return init(element, settings);
+        init: function (element, properties) {
+            return init(element, properties);
         },
 
         destroy: function () {

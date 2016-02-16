@@ -8,6 +8,10 @@ namespace AGRacing.GameData.Telemetry.Sessions
     {
         public string SessionType { get; set; }
         public int SessionNum { get; set; }
+        public string Laps { get; set; }
+        public string SessionTime { get; set; }
+        public string SessionTimeRemaining { get; set; }
+
         private readonly Cars _drivers;
 
         public Session() {

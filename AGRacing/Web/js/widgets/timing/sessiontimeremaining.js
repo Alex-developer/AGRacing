@@ -1,17 +1,19 @@
-﻿var AGRacingCURRENTLAPWidget = function () {
+﻿var AGRacingSESSIONTIMEREMAININGWidget = function () {
     'use strict';
 
-    var _name = 'Current';
+    var _name = 'Time Remaining';
     var _icon = '/images/widgets/stopwatch.png';
-    var _labels = ['Current Lap', 'Current'];
+    var _labels = ['Session Time Remaining'];
+    var _tab = 'Timing';
+    var _supports = ['iRacing'];
 
     var _initialised = false;
     var _el = null;
     var _elId = null;
-    var _lastCurrentLap = null;
+    var _lastSessionTimeRemaining = null;
 
     var _properties = {
-        type: 'currentlap',
+        type: 'sessiontimeremaining',
         css: {
             left: 0,
             top: 0,
@@ -19,10 +21,15 @@
             height: 50
         }
     };
-    var _messages = ['cardata'];
+    var _messages = ['environmentdata'];
 
-    function init(element) {
-        _el = element;
+    function init(element, properties) {
+        if (element !== undefined) {
+            _el = element;
+        }
+        if (properties !== undefined) {
+            _properties = properties;
+        }
         buildUI();
     }
 
@@ -42,9 +49,9 @@
 
     function updateUI(data) {
         if (_initialised) {
-            if (_lastCurrentLap !== data.CurrentLapTime) {
-                jQuery('#' + _elId).html(data.CurrentLapTime);
-                _lastCurrentLap = data.CurrentLapTime;
+            if (_lastSessionTimeRemaining !== data.CurrentSession.SessionTimeRemaining) {
+                jQuery('#' + _elId).html(data.CurrentSession.SessionTimeRemaining);
+                _lastSessionTimeRemaining = data.CurrentSession.SessionTimeRemaining;
             }
         }
     }
@@ -70,14 +77,15 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Timing',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
         },
 
-        init: function (element) {
-            return init(element);
+        init: function (element, properties) {
+            return init(element, properties);
         },
 
         destroy: function () {
@@ -114,4 +122,4 @@
 
     }
 };
-//# sourceURL=/js/widgets/currentlap.js
+//# sourceURL=/js/widgets/timing/sessiontimeremaining.js

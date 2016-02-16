@@ -420,7 +420,6 @@ E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\splitbehind.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\splitahead.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\split.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\racestate.js
-E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timeleft.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\tyres.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\lapinvalidated.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\damage.js
@@ -430,9 +429,6 @@ E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\car\acceleratio
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\engine\rpmled.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\throttle.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\trackmap.js
-E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\currentlap.js
-E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\lastlap.js
-E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\bestlap.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\gear.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\misc\label.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\session\ambienttemp.js
@@ -515,3 +511,6 @@ E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timing\top5.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timing\position.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timing\bestlaptime.js
 E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timing\timingscreen.js
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timing\sessiontimeremaining.js
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timing\lastlaptime.js
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\timing\currentlaptime.js

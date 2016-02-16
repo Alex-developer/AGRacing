@@ -13,8 +13,6 @@ namespace AGRacing.GameData.Telemetry.Sessions
         public string TrackVarient { get; set; }
         public string TrackTemperature { get; set; }
         public string AmbientTemperature { get; set; }
-        public string Laps { get; set; }
-        public string SessionTime { get; set; }
 
         private Session _currentSession;
 

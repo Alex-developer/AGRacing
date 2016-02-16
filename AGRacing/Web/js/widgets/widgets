@@ -21,14 +21,14 @@ car/fuel
 timing/top5
 timing/position
 timing/bestlaptime
+timing/lastlaptime
+timing/currentlaptime
 timing/timingscreen
+timing/sessiontimeremaining
 flag
 flagreason
 gear
 racestate
-bestlap
-lastlap
-currentlap
 trackmap
 brake
 throttle
@@ -36,7 +36,6 @@ wheel
 lapinvalidated
 damage
 tyres
-timeleft
 carname
 carclass
 split

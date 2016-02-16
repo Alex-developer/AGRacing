@@ -1,17 +1,19 @@
-﻿var AGRacingBESTLAPWidget = function () {
+﻿var AGRacingLASTLAPTIMEWidget = function () {
     'use strict';
 
-    var _name = 'Best';
+    var _name = 'Last';
     var _icon = '/images/widgets/stopwatch.png';
-    var _labels = ['Best Lap', 'Best'];
+    var _labels = ['Last Lap', 'Last'];
+    var _tab = 'Timing';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _initialised = false;
     var _el = null;
     var _elId = null;
-    var _lastBestLap = null;
+    var _lastLastLapTime = null;
 
     var _properties = {
-        type: 'bestlap',
+        type: 'lastlaptime',
         css: {
             left: 0,
             top: 0,
@@ -19,10 +21,15 @@
             height: 50
         }
     };
-    var _messages = ['timingdata'];
+    var _messages = ['environmentdata'];
 
-    function init(element) {
-        _el = element;
+    function init(element, properties) {
+        if (element !== undefined) {
+            _el = element;
+        }
+        if (properties !== undefined) {
+            _properties = properties;
+        }
         buildUI();
     }
 
@@ -42,10 +49,16 @@
 
     function updateUI(data) {
         if (_initialised) {
-            if (_lastBestLap !== data.PersonalFastestLap) {
-               jQuery('#' + _elId).html(data.PersonalFastestLap);
-               _lastBestLap = data.PersonalFastestLap;
-           }
+            var drivers = data.CurrentSession.Drivers.DriverList;
+            for (var i = 0 ; i < drivers.length; i++) {
+                if (drivers[i].IsCurrentDriver) {
+                    if (_lastLastLapTime !== drivers[i].LastLapTime) {
+                        jQuery('#' + _elId).html(drivers[i].LastLapTime);
+                        _lastLastLapTime = drivers[i].LastLapTime;
+                    }
+                    break;
+                }
+            }
         }
     }
 
@@ -70,14 +83,15 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Timing',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
         },
 
-        init: function (element) {
-            return init(element);
+        init: function (element, properties) {
+            return init(element, properties);
         },
 
         destroy: function () {
@@ -114,4 +128,4 @@
 
     }
 };
-//# sourceURL=/js/widgets/bestlap.js
+//# sourceURL=/js/widgets/timing/lastlaptime.js

@@ -36,6 +36,8 @@ namespace AGRacing.GameData.GameState.Car
 
         public Engine Engine { get; set; }
 
+        public string CurrentLapTime { get; set; }
+
         public CarData()
         {
             Acceleration = new AGRacing.GameData.GameState.Acceleration();

@@ -1499,6 +1499,9 @@
     <Content Include="Web\js\widgets\session\trackvarient.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Web\js\widgets\timing\sessiontimeremaining.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\js\widgets\timing\timingscreen.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1529,9 +1532,6 @@
     <Content Include="Web\js\widgets\racestate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\js\widgets\timeleft.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Web\js\widgets\tyres.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1559,13 +1559,10 @@
     <Content Include="Web\js\widgets\trackmap.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\js\widgets\currentlap.js">
+    <Content Include="Web\js\widgets\timing\currentlaptime.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\js\widgets\lastlap.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\js\widgets\bestlap.js">
+    <Content Include="Web\js\widgets\timing\lastlaptime.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\js\widgets\gear.js">

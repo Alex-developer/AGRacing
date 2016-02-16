@@ -100,8 +100,8 @@ namespace AGRacing.Games.IRacing
             var session = sessionInfo["SessionInfo"]["Sessions"]["SessionNum", telemetry.Sessions.CurrentSession.SessionNum];
             telemetry.Sessions.CurrentSession.SessionType = session["SessionType"].GetValue();
 
-            telemetry.Sessions.Laps = getYAMLValue(session["SessionLaps"]);
-            telemetry.Sessions.SessionTime = getYAMLValue(session["SessionTime"]);
+            telemetry.Sessions.CurrentSession.Laps = getYAMLValue(session["SessionLaps"]);
+            telemetry.Sessions.CurrentSession.SessionTime = getYAMLValue(session["SessionTime"]);
 
             var tt = 56;
         }
@@ -173,7 +173,12 @@ namespace AGRacing.Games.IRacing
                 telemetry.CarState.Engine.EngineStalled = telemetryInfo.EngineWarnings.Value.Contains(EngineWarnings.EngineStalled);
                 telemetry.CarState.Engine.RevLimiterActive = telemetryInfo.EngineWarnings.Value.Contains(EngineWarnings.RevLimiterActive);
 
-                var tt = 56;
+
+                TimeSpan time = TimeSpan.FromSeconds(telemetryInfo.SessionTimeRemain.Value);
+                telemetry.Sessions.CurrentSession.SessionTimeRemaining = time.ToString(@"hh\:mm\:ss");
+                
+                telemetry.CarState.CurrentLapTime = GetBestLApTime(telemetryInfo.LapCurrentLapTime.Value.ToString());
+
 
             }
         }
@@ -242,13 +247,6 @@ namespace AGRacing.Games.IRacing
             }
             car.BestLapTime = GetBestLApTime(bestlaptime);
 
-            string lastlaptime;
-            if (!sessionInfo["SessionInfo"]["Sessions"]["SessionNum", telemetry.Sessions.CurrentSession.SessionNum]["ResultsPositions"]["CarIdx", index]["LastLapTime"].TryGetValue(out lastlaptime))
-            {
-                lastlaptime = "0";
-            }
-            car.LastLapTime = GetBestLApTime(lastlaptime);
-
             string time;
             if (!sessionInfo["SessionInfo"]["Sessions"]["SessionNum", telemetry.Sessions.CurrentSession.SessionNum]["ResultsPositions"]["CarIdx", index]["LastLapTime"].TryGetValue(out time))
             {
@@ -315,6 +313,10 @@ namespace AGRacing.Games.IRacing
                 if (wrapper.DriverId == driver.id)
                 {
                     driver.IsCurrentDriver = true;
+
+                    string lastLapTime = wrapper.GetTelemetryValue<float>("LapLastLapTime").Value.ToString();
+                    driver.LastLapTime =  GetBestLApTime(lastLapTime);
+                    
                 }
 
             }

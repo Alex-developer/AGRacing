@@ -1,34 +1,40 @@
-﻿var AGRacingTIMELEFTWidget = function () {
+﻿var AGRacingCURRENTLAPTIMEWidget = function () {
     'use strict';
 
-    var _name = 'Time Left';
+    var _name = 'Current';
     var _icon = '/images/widgets/stopwatch.png';
-    var _labels = ['Time Left'];
+    var _labels = ['Current Lap', 'Current'];
+    var _tab = 'Timing';
+    var _supports = ['iRacing', 'Project Cars'];
 
     var _initialised = false;
     var _el = null;
     var _elId = null;
-    var _lastTimeLeft = null;
+    var _lastCurrentLapTime = null;
 
     var _properties = {
-        type: 'timeleft',
+        type: 'currentlaptime',
         css: {
             left: 0,
             top: 0,
-            width: 150,
-            height: 45
+            width: 300,
+            height: 50
         }
     };
-    var _messages = ['timingdata'];
+    var _messages = ['cardata'];
 
-    function init(element) {
-        _el = element;
+    function init(element, properties) {
+        if (element !== undefined) {
+            _el = element;
+        }
+        if (properties !== undefined) {
+            _properties = properties;
+        }
         buildUI();
     }
 
     function destroy() {
         _initialised = false;
-        kendo.destroy(jQuery(_el));
         jQuery(_el).remove();
     }
 
@@ -43,10 +49,9 @@
 
     function updateUI(data) {
         if (_initialised) {
-            var timeLeft = data.SessionTimeLeft.toFixed(0);
-            if (_lastTimeLeft !== timeLeft) {
-                jQuery('#' + _elId).html(_lastTimeLeft.toHHMMSS(false));
-                _lastTimeLeft = timeLeft;
+            if (_lastCurrentLapTime !== data.CurrentLapTime) {
+                jQuery('#' + _elId).html(data.CurrentLapTime);
+                _lastCurrentLapTime = data.CurrentLapTime;
             }
         }
     }
@@ -72,14 +77,15 @@
         icon: _icon,
         messages: _messages,
         labels: _labels,
-        tab: 'Timing',
+        tab: _tab,
+        supports: _supports,
 
         element: function () {
             return _el;
         },
 
-        init: function (element) {
-            return init(element);
+        init: function (element, properties) {
+            return init(element, properties);
         },
 
         destroy: function () {
@@ -116,4 +122,4 @@
 
     }
 };
-//# sourceURL=/js/widgets/timeleft.js
+//# sourceURL=/js/widgets/timing/currentlaptime.js

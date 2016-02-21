@@ -17,5 +17,7 @@ namespace AGRacing.GameData.GameState.Car
         public bool OilPressureWarning { get; set; }
         public bool EngineStalled { get; set; }
         public bool RevLimiterActive { get; set; }
+        public double ShiftIndicatorPercentage { get; set; }
+
     }
 }

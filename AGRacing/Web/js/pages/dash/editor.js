@@ -385,10 +385,12 @@
         updateGrid();
         jQuery('.right-off-canvas-toggle').show();
 
+        jQuery('#toolbar-panel').show();
         _editing = true;
     }
 
     function stopEditor() {
+        jQuery('#toolbar-panel').hide();
         jQuery('#rightheader .whenediting').addClass('disabled');
         AGRacingWidgets.stopEditing();
         AGRacingUI.deleteGrid(jQuery('#content'));

@@ -218,7 +218,10 @@ namespace AGRacing
             gameState.Connected = true;
             while (true)
             {
-                gameState.Game.ReadData();
+                if (!gameState.Game.IsEventDriven())
+                {
+                    gameState.Game.ReadData();
+                }
                 Thread.Sleep(1);
             }
         }

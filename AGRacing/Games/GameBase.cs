@@ -15,6 +15,11 @@ namespace AGRacing.Games
             return "";    
         }
 
+        public virtual byte GameCode()
+        {
+            return 0;
+        }
+
         public virtual void StartGameReader(TelemetryData gameState)
         {
         }
@@ -54,6 +59,11 @@ namespace AGRacing.Games
         public virtual Track LoadTrack()
         {
             return new Track();
+        }
+
+        public virtual bool IsEventDriven()
+        {
+            return false;
         }
     
     }

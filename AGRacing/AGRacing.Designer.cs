@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.gameConnectionState = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBoxStatus = new System.Windows.Forms.GroupBox();
@@ -44,6 +45,7 @@
             this.lblPortLabel = new System.Windows.Forms.Label();
             this.lblIPAddress = new System.Windows.Forms.Label();
             this.lblIPAddressLabel = new System.Windows.Forms.Label();
+            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.statusStrip.SuspendLayout();
             this.groupBoxStatus.SuspendLayout();
             this.groupBoxWebServer.SuspendLayout();
@@ -259,6 +261,7 @@
         private System.Windows.Forms.Label lblPortLabel;
         private System.Windows.Forms.Label lblIPAddress;
         private System.Windows.Forms.Label lblIPAddressLabel;
+        private System.IO.Ports.SerialPort serialPort1;
     }
 }
 

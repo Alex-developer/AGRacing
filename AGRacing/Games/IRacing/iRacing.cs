@@ -4,12 +4,14 @@ using AGRacing.GameData.Telemetry;
 using iRacingSdkWrapper;
 using iRacingSdkWrapper.Bitfields;
 using AGRacing.GameData.Telemetry.Sessions.SessionDrivers;
+using AGRacing.Hardware;
 
 namespace AGRacing.Games.IRacing
 {
     class IRacing : GameBase
     {
         private readonly string gameName = "iRacing";
+        private readonly byte gameCode = 1;
         private SdkWrapper wrapper;
         private TelemetryInfo telemetryInfo;
         private SessionInfo sessionInfo;
@@ -18,6 +20,7 @@ namespace AGRacing.Games.IRacing
 
         private bool _mustUpdateSessionData;
         private bool _mustReloadDrivers = false;
+        private AGHardware _hardware;
 
         #region Getters and Setters
         #endregion
@@ -27,12 +30,24 @@ namespace AGRacing.Games.IRacing
             return gameName;
         }
 
+        public override byte GameCode()
+        {
+            return gameCode;
+        }
+
+        public override bool IsEventDriven()
+        {
+            return true;
+        }
+
         public IRacing()
         {
             wrapper = new SdkWrapper();
-            wrapper.TelemetryUpdateFrequency = 4;
+           // wrapper.TelemetryUpdateFrequency = 4;
             wrapper.TelemetryUpdated += OnTelemetryUpdated;
             wrapper.SessionInfoUpdated += OnSessionInfoUpdated;
+
+            _hardware = new AGHardware();
         }
 
         public override void StartGameReader(TelemetryData telemetry)
@@ -76,6 +91,8 @@ namespace AGRacing.Games.IRacing
         {
             // Grab a copy of the session info
             telemetryInfo = e.TelemetryInfo;
+
+            ReadData();
 
             // Deal with the session changing
             if (telemetry.Sessions.CurrentSession == null || (telemetry.Sessions.CurrentSession.SessionNum != telemetryInfo.SessionNum.Value))
@@ -139,12 +156,12 @@ namespace AGRacing.Games.IRacing
 
         public override void ReadData()
         {
-            if (telemetryInfo != null)
+            if (telemetryInfo != null && sessionInfo != null)
             {
                 GameDataValid = true;
                 
                 telemetry.CarState.Engine.RPM = telemetryInfo.RPM.Value;
-                telemetry.CarState.Speed = telemetryInfo.Speed.Value;
+                telemetry.CarState.Speed = (float)(telemetryInfo.Speed.Value * 2.23693629);
                 telemetry.CarState.Gear = telemetryInfo.Gear.Value;
 
                 telemetry.CarState.Engine.WaterTemp = telemetryInfo.WaterTemp.Value;
@@ -172,14 +189,21 @@ namespace AGRacing.Games.IRacing
                 telemetry.CarState.Engine.OilPressureWarning = telemetryInfo.EngineWarnings.Value.Contains(EngineWarnings.OilPressureWarning);
                 telemetry.CarState.Engine.EngineStalled = telemetryInfo.EngineWarnings.Value.Contains(EngineWarnings.EngineStalled);
                 telemetry.CarState.Engine.RevLimiterActive = telemetryInfo.EngineWarnings.Value.Contains(EngineWarnings.RevLimiterActive);
-
+                telemetry.CarState.Engine.ShiftIndicatorPercentage = telemetryInfo.ShiftIndicatorPct.Value;
 
                 TimeSpan time = TimeSpan.FromSeconds(telemetryInfo.SessionTimeRemain.Value);
                 telemetry.Sessions.CurrentSession.SessionTimeRemaining = time.ToString(@"hh\:mm\:ss");
-                
-                telemetry.CarState.CurrentLapTime = GetBestLApTime(telemetryInfo.LapCurrentLapTime.Value.ToString());
 
+                string currentLapTime = wrapper.GetTelemetryValue<float>("LapCurrentLapTime").Value.ToString();
 
+                telemetry.CarState.CurrentLapTime = GetBestLApTime(currentLapTime);
+
+                if (!_hardware.PortOpen())
+                {
+                    _hardware.Start();
+                }
+
+                _hardware.SendData(telemetry);
             }
         }
 

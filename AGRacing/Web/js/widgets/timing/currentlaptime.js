@@ -40,7 +40,7 @@
 
     function buildUI() {
         _elId = AGRacingUI.getNextId();
-        var element = jQuery('<span>').css({ 'pointer-events': 'none' }).html('--:--:--').attr('id', _elId);
+        var element = jQuery('<span>').css({ 'pointer-events': 'none' }).html('--:--:--').attr('id', _elId).width(_properties.width).height(_properties.height);
 
         jQuery(_el).append(element);
         jQuery('#' + _elId).bigText();

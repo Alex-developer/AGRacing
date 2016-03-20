@@ -142,6 +142,7 @@ namespace AGRacing.WebServices
             sd.AddWebSocketService<TimingDataService>("/Timing", () => new TimingDataService(gameState));
             sd.AddWebSocketService<SessionDataService>("/Environment", () => new SessionDataService(gameState));
             sd.AddWebSocketService<RecordingService>("/Recording", () => new RecordingService(gameState));
+            sd.AddWebSocketService<FileService>("/File", () => new FileService(gameState));
             sd.Start();
 
             sd.OnPost += (sender, e) =>
@@ -208,6 +209,10 @@ namespace AGRacing.WebServices
                         dynamic result = null;
                         switch (urlBits[0])
                         {
+                            case "File":
+                                result = DataHandler.Files(gameState);
+                                haveResult = true;
+                                break;
                             case "Connected":
                                 result = DataHandler.Connected(gameState);
                                 haveResult = true;

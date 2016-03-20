@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Web;
 using AGRacing.WebServices;
+using WebSocketSharp;
 using AGRacing.GameData.Telemetry;
 using AGRacing.GameData.TrackData;
 using AGRacing.GameData.TrackData.TrackAnalysis;
@@ -25,6 +26,11 @@ namespace AGRacing.WebServices.Services
                 dataValid = true;
             }
             return dataValid;
+        }
+
+        public static String Files(TelemetryData gameState)
+        {
+            return "";
         }
 
         public static GameInfo Connected(TelemetryData gameState)

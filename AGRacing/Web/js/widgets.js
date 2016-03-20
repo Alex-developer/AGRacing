@@ -117,7 +117,7 @@
         jQuery(el).addClass('border');
 
         jQuery(el).draggable({
-            grid: [10, 10],
+            grid: [AGRacingUI.gridSize, AGRacingUI.gridSize],
             cancel: 'span',
             start: function (event, ui) {
                 var posEl = jQuery(el).find('.position');

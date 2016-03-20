@@ -15,8 +15,8 @@ namespace AGRacing.GameData
 
         public GameExecutableData() {
             gameData = new GameInfo();
-            gameData.Processes = new string[] { "pCARS", "pCARS64", "pCARS2Gld", "AssettoCorsa", "iRacingSim", "iRacingSim64" };
-            gameData.Classes = new string[] {"ProjectCars", "ProjectCars", "ProjectCars", "AssettoCorsa", "IRacing", "IRacing"};
+            gameData.Processes = new string[] { "pCARS", "pCARS64", "pCARS2Gld", "AssettoCorsa", "iRacingSim", "iRacingSim64", "iRacingSim64DX11" , "iRacingSimDX11"};
+            gameData.Classes = new string[] { "ProjectCars", "ProjectCars", "ProjectCars", "AssettoCorsa", "IRacing", "IRacing", "IRacing", "IRacing" };
         }
 
         public GameInfo GetGameData()

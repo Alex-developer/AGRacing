@@ -18,6 +18,7 @@ namespace AGRacing.GameData.GameState.Car
         public bool EngineStalled { get; set; }
         public bool RevLimiterActive { get; set; }
         public double ShiftIndicatorPercentage { get; set; }
+        public float ThrottleMap { get; set; }
 
     }
 }

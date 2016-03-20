@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AGRacing.GameData.GameState;
 using AGRacing.GameData.GameState.Car;
+using AGRacing.GameData.Telemetry.Car;
 
 namespace AGRacing.GameData.GameState.Car
 {
@@ -35,6 +36,7 @@ namespace AGRacing.GameData.GameState.Car
         public int PitSpeedLimiterActive { get; set; }
 
         public Engine Engine { get; set; }
+        public Chassis Chassis { get; set; }
 
         public string CurrentLapTime { get; set; }
 
@@ -42,6 +44,7 @@ namespace AGRacing.GameData.GameState.Car
         {
             Acceleration = new AGRacing.GameData.GameState.Acceleration();
             Engine = new AGRacing.GameData.GameState.Car.Engine();
+            Chassis = new Chassis();
         }
 
     }

@@ -194,16 +194,46 @@ namespace AGRacing.Games.IRacing
                 TimeSpan time = TimeSpan.FromSeconds(telemetryInfo.SessionTimeRemain.Value);
                 telemetry.Sessions.CurrentSession.SessionTimeRemaining = time.ToString(@"hh\:mm\:ss");
 
+                try
+                {
+                    float brakeBias = wrapper.GetTelemetryValue<float>("dcBrakeBias").Value;
+                    telemetry.CarState.Chassis.BrakeBias = brakeBias;
+                }
+                catch (ArgumentException)
+                {
+                    telemetry.CarState.Chassis.BrakeBias = -1;
+                }
+
+                try 
+                {
+                    float throttleMap = wrapper.GetTelemetryValue<float>("dcThrottleShape").Value;
+                    telemetry.CarState.Engine.ThrottleMap = throttleMap;
+                }
+                catch (ArgumentException)
+                {
+                    telemetry.CarState.Engine.ThrottleMap = -1;
+                }
+
+                try
+                {
+                    float abs = wrapper.GetTelemetryValue<float>("dcABS").Value;
+                    telemetry.CarState.Chassis.ABS = abs;
+                }
+                catch (ArgumentException)
+                {
+                    telemetry.CarState.Chassis.ABS = -1;
+                }
+                
                 string currentLapTime = wrapper.GetTelemetryValue<float>("LapCurrentLapTime").Value.ToString();
 
                 telemetry.CarState.CurrentLapTime = GetBestLApTime(currentLapTime);
 
                 if (!_hardware.PortOpen())
                 {
-                    _hardware.Start();
+                 //   _hardware.Start();
                 }
 
-                _hardware.SendData(telemetry);
+               // _hardware.SendData(telemetry);
             }
         }
 

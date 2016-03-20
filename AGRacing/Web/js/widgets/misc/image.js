@@ -34,7 +34,7 @@
     }
 
     function buildUI() {
-        _elImage = jQuery('<img>', { 'src': '/images/userimages/dashboard.png' }).css({ 'pointer-events': 'none' }).addClass('flag');
+        _elImage = jQuery('<img>', { 'src': '/images/userimages/dash.png' }).css({ 'pointer-events': 'none' }).addClass('flag');
         jQuery(_el).append(_elImage);
         _initialised = true;
     }

@@ -2,6 +2,7 @@
 engine/rpmled
 engine/watertemp
 engine/oiltemp
+engine/throttlemap
 engine/warnings/watertempwarning
 engine/warnings/fuelpressurewarning
 engine/warnings/oilpressurewarning
@@ -25,6 +26,8 @@ timing/lastlaptime
 timing/currentlaptime
 timing/timingscreen
 timing/sessiontimeremaining
+chassis/brakebias
+chassis/abs
 flag
 flagreason
 gear

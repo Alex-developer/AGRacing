@@ -12,6 +12,7 @@ var AGRacingUI = function () {
     var _id = 0;
     var _selectedWidget = null;
     var _pageName = '';
+    var _gridSize = 5;
 
     function initUI() {
         jQuery(document).foundation({
@@ -155,18 +156,18 @@ var AGRacingUI = function () {
         return 'ag_' + _id;
     }
 
-    function drawGrid(el, size) {
+    function drawGrid(el) {
         var height = el.height();
         var width = el.width();
-        var ratioW = Math.floor(width / size);
-        var ratioH = Math.floor(height / size);
+        var ratioW = Math.floor(width / _gridSize);
+        var ratioH = Math.floor(height / _gridSize);
 
         jQuery('.gridlines').remove();
 
         for (var i = 0; i <= ratioW; i++) { // vertical grid lines
             jQuery('<div />').css({
                 'top': 0,
-                'left': i * size,
+                'left': i * _gridSize,
                 'width': 1,
                 'height': height
             })
@@ -176,7 +177,7 @@ var AGRacingUI = function () {
 
         for (i = 0; i <= ratioH; i++) { // horizontal grid lines
             jQuery('<div />').css({
-                'top': i * size,
+                'top': i * _gridSize,
                 'left': 0,
                 'width': width,
                 'height': 1
@@ -193,6 +194,8 @@ var AGRacingUI = function () {
     }
 
     return {
+        gridSize: _gridSize,
+
         init: function () {
             initUI();
         },

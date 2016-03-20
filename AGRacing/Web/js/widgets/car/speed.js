@@ -103,13 +103,13 @@
 
     function updateUI(data) {
         if (_initialised) {
-            if (_lastSpeed !== data.Speed.toFixed(2)) {
+            if (_lastSpeed !== data.Speed.toFixed(0)) {
                 if (_properties.gaugestyle === 'digital') {
-                    jQuery('#' + _elId).html(data.Speed.toFixed(2));
+                    jQuery('#' + _elId).html(data.Speed.toFixed(0));
                 } else {
-                    jQuery(_el).data('kendoRadialGauge').value(data.Speed.toFixed(2));
+                    jQuery(_el).data('kendoRadialGauge').value(data.Speed.toFixed(0));
                 }
-                _lastSpeed = data.Speed.toFixed(2);
+                _lastSpeed = data.Speed.toFixed(0);
             }
         }
     }

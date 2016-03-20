@@ -16,7 +16,29 @@
 </div>
 
 <div id="agtoolbar">
+    <div id="toolbar-header">
+        <nav class="top-bar" data-topbar role="navigation">
+            <ul class="title-area">
+                <li class="name active">
+                    <h1><a href="#">&nbsp;</a></h1>
+                </li>
+            </ul>
+            <section class="top-bar-section">
+                <!-- Right Nav Section -->
+                <ul class="right">
+                    <li class="active"><a href="#">X</a></li>
+                </ul>
+
+                <!-- Left Nav Section -->
+                <ul class="left">
+                    <li><a href="#">Left</a></li>
+                </ul>
+            </section>
+        </nav>
+    </div>
     <div id="toolbar-panel">
+
+        <!--
         <div class="icon-bar six-up">
             <div class="item">
                 <i>&nbsp;</i>
@@ -37,5 +59,67 @@
                 <i class="fi-italic"></i>
             </div>
         </div>
+-->
+
+
+
+
+        <ul class="tabs" data-tab>
+            <li class="tab-title"><a href="#properties1">Properties</a></li>
+            <li class="tab-title"><a href="#gauge1">Gauge</a></li>
+        </ul>
+        <div class="tabs-content">
+            <div class="content active" id="properties1">
+
+
+                <div class="row">
+                    <div class="large-3 small-3 columns">
+                        <label>
+                            <strong>Font</strong>
+                            <select class="editorfield" id="widgetfont-family" data-property='font-family' data-css="font-family">
+                                <option value="Lato">Lato</option>
+                                <option value="Times">Times</option>
+                                <option value="ledFont">L.E.D</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="large-6 small-6 columns">
+                        <label>
+                            <strong>Alignment</strong>
+                            <div class="icon-bar three-up">
+                                <div class="item agalignleft editorfield agalign" data-property="align" data-val="left">
+                                    <i class="fi-align-left"></i>
+                                </div>
+                                <div class="item agaligncenter editorfield agalign" data-property="align" data-val="center">
+                                    <i class="fi-align-center"></i>
+                                </div>
+                                <div class="item agalignright editorfield agalign" data-property="align" data-val="right">
+                                    <i class="fi-align-right"></i>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="large-3 small-3 columns">
+                        <label>
+                            <strong>Style</strong>
+                            <div class="icon-bar two-up">
+                                <div class="item editorfield agbold" data-property='font-weight' data-css="font-weight" data-val="bold" data-off="normal">
+                                    <i class="fi-bold"></i>
+                                </div>
+                                <div class="item editorfield agitalic" data-property='font-style' data-css="font-style" data-val="italic" data-off="normal">
+                                    <i class="fi-italic"></i>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+            <div class="content active" id="gauge1">
+            </div>
+        </div>
+
+
     </div>
 </div>

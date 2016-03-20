@@ -9,6 +9,8 @@
     var _defaultDashboards = {
         0: {
             name: 'Default',
+            device: 'ipad3',
+            orientation :'landscape',
             widgets: [
                 {
                     type: 'acceleration',
@@ -82,6 +84,7 @@
         var deferred = new jQuery.Deferred();
         if (_localStorage) {
             var cookieData = JSON.stringify(_dashBoards);
+            console.log(cookieData);
             Cookies.set(_localStorageCookie, cookieData, { expires: _localStorageTime });
         } else {
             jQuery.ajax({

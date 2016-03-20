@@ -9,194 +9,315 @@
             <div id="toolbox"></div>
         </div>
         <div class="content" id="properties">
-            <form>
-                <div class="row">
-                    <div class="large-3 small-3 columns">
-                        <label>
-                            <strong>X</strong>
-                            <input type="text" class="editorfield" id="widgetleft" data-property='x' data-css="left" data-unit="px" placeholder="x" />
-                        </label>
-                    </div>
-                    <div class="large-3 small-3 columns">
-                        <label>
-                            <strong>Y</strong>
-                            <input type="text" class="editorfield" id="widgettop" data-property='y' data-css="top" data-unit="px" placeholder="y" />
-                        </label>
-                    </div>
-                    <div class="large-3 small-3 columns">
-                        <label>
-                            <strong>Width</strong>
-                            <input type="text" class="editorfield" id="widgetwidth" data-property='width' data-css="width" data-unit="px" placeholder="Width" />
-                        </label>
-                    </div>
-                    <div class="large-3 small-3 columns">
-                        <label>
-                            <strong>Height</strong>
-                            <input type="text" class="editorfield" id="widgetheight" data-property='height' data-css="height" data-unit="px" placeholder="Height" />
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="large-3 small-3 columns">
-                        <label>
-                            <strong>Font</strong>
-                            <select class="editorfield" id="widgetfont-family" data-property='font-family' data-css="font-family">
-                                <option value="Lato">Lato</option>
-                                <option value="Times">Times</option>
-                                <option value="ledFont">L.E.D</option>
-                            </select>
-                        </label>
-                    </div>
 
-                    <div class="large-6 small-6 columns">
-                        <label>
-                            <strong>Alignment</strong>
-                            <div class="icon-bar three-up">
-                                <div class="item agalignleft editorfield agalign" data-property="align" data-val="left">
-                                    <i class="fi-align-left"></i>
-                                </div>
-                                <div class="item agaligncenter editorfield agalign" data-property="align" data-val="center">
-                                    <i class="fi-align-center"></i>
-                                </div>
-                                <div class="item agalignright editorfield agalign" data-property="align" data-val="right">
-                                    <i class="fi-align-right"></i>
+            <ul class="tabs" data-tab>
+                <li class="tab-title active"><a href="#general">General</a></li>
+                <li class="tab-title"><a href="#gauge">Gauge</a></li>
+            </ul>
+            <div class="tabs-content">
+                <div class="content active" id="general">
+                    <form>
+                        <div class="row">
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>X</strong>
+                                    <input type="text" class="editorfield" id="widgetleft" data-property='x' data-css="left" data-unit="px" placeholder="x" />
+                                </label>
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Y</strong>
+                                    <input type="text" class="editorfield" id="widgettop" data-property='y' data-css="top" data-unit="px" placeholder="y" />
+                                </label>
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Width</strong>
+                                    <input type="text" class="editorfield" id="widgetwidth" data-property='width' data-css="width" data-unit="px" placeholder="Width" />
+                                </label>
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Height</strong>
+                                    <input type="text" class="editorfield" id="widgetheight" data-property='height' data-css="height" data-unit="px" placeholder="Height" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Font</strong>
+                                    <select class="editorfield" id="widgetfont-family" data-property='font-family' data-css="font-family">
+                                        <option value="Lato">Lato</option>
+                                        <option value="Times">Times</option>
+                                        <option value="ledFont">L.E.D</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <div class="large-6 small-6 columns">
+                                <label>
+                                    <strong>Alignment</strong>
+                                    <div class="icon-bar three-up">
+                                        <div class="item agalignleft editorfield agalign" data-property="align" data-val="left">
+                                            <i class="fi-align-left"></i>
+                                        </div>
+                                        <div class="item agaligncenter editorfield agalign" data-property="align" data-val="center">
+                                            <i class="fi-align-center"></i>
+                                        </div>
+                                        <div class="item agalignright editorfield agalign" data-property="align" data-val="right">
+                                            <i class="fi-align-right"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Style</strong>
+                                    <div class="icon-bar two-up">
+                                        <div class="item editorfield agbold" data-property='font-weight' data-css="font-weight" data-val="bold" data-off="normal">
+                                            <i class="fi-bold"></i>
+                                        </div>
+                                        <div class="item editorfield agitalic" data-property='font-style' data-css="font-style" data-val="italic" data-off="normal">
+                                            <i class="fi-italic"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-7 small-7 columns">
+                                <label>
+                                    <strong>Z-Index</strong>
+                                    <div class="icon-bar four-up">
+                                        <a href="#" class="layer" id="zdown">
+                                            <img src="/images/down.png" width="128" />
+                                        </a>
+                                        <a href="#" class="layer" id="zbotton">
+                                            <img src="/images/bottom.png" width="128" />
+                                        </a>
+                                        <a href="#" class="layer" id="zup">
+                                            <img src="/images/up.png" width="128" />
+                                        </a>
+                                        <a href="#" class="layer" id="ztop">
+                                            <img src="/images/top.png" width="128" />
+                                        </a>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="large-5 small-5 columns">
+                                <label>
+                                    <strong>Font Colour</strong>
+                                    <input type="text" class="editorfield" id="widgetcolor" data-property='color' data-css="color" data-cssprefix="#" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 small-12 columns">
+                                <label>
+                                    <strong>Text</strong>
+                                    <input type="text" class="editorfield" id="widgettext" data-property='text' placeholder="Text" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>
+                                    <strong>Phrases</strong>
+                                    <select class="editorfield" id="widgetphrase" data-property='text'></select>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>
+                                    <strong>Gauge Style</strong>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-3 small-3 columns">
+                                Digital
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <div class="switch small">
+                                    <input id="styledigital" class="editorfield gaugestyle" type="radio" data-style="digital" checked name="widgetstyle">
+                                    <label for="styledigital"></label>
                                 </div>
                             </div>
-                        </label>
-                    </div>
-                    <div class="large-3 small-3 columns">
-                        <label>
-                            <strong>Style</strong>
-                            <div class="icon-bar two-up">
-                                <div class="item editorfield agbold" data-property='font-weight' data-css="font-weight" data-val="bold" data-off="normal">
-                                    <i class="fi-bold"></i>
-                                </div>
-                                <div class="item editorfield agitalic" data-property='font-style' data-css="font-style" data-val="italic" data-off="normal">
-                                    <i class="fi-italic"></i>
+                            <div class="large-3 small-3 columns">
+                                Gauge
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <div class="switch small">
+                                    <input id="stylegauge" class="editorfield gaugestyle" type="radio" data-style="analog" name="widgetstyle">
+                                    <label for="stylegauge"></label>
                                 </div>
                             </div>
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="large-7 small-7 columns">
-                        <label>
-                            <strong>Z-Index</strong>
-                            <div class="icon-bar four-up">
-                                <a href="#" class="layer" id="zdown">
-                                    <img src="/images/down.png" width="128" />
-                                </a>
-                                <a href="#" class="layer" id="zbotton">
-                                    <img src="/images/bottom.png" width="128" />
-                                </a>
-                                <a href="#" class="layer" id="zup">
-                                    <img src="/images/up.png" width="128" />
-                                </a>
-                                <a href="#" class="layer" id="ztop">
-                                    <img src="/images/top.png" width="128" />
-                                </a>
+                        </div>
+
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>
+                                    <strong>Gauge Units</strong>
+                                </label>
                             </div>
-                        </label>
-                    </div>
-                    <div class="large-5 small-5 columns">
-                        <label>
-                            <strong>Font Colour</strong>
-                            <input type="text" class="editorfield" id="widgetcolor" data-property='color' data-css="color" data-cssprefix="#" />
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="large-12 small-12 columns">
-                        <label>
-                            <strong>Text</strong>
-                            <input type="text" class="editorfield" id="widgettext" data-property='text' placeholder="Text" />
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="large-12 columns">
-                        <label>
-                            <strong>Phrases</strong>
-                            <select class="editorfield" id="widgetphrase" data-property='text'></select>
-                        </label>
-                    </div>
-                </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-2 small-2 columns">
+                                Metric
+                            </div>
+                            <div class="large-2 small-2 columns">
+                                <div class="switch small">
+                                    <input id="metric" class="editorfield units" type="radio" data-units="metric" checked name="widgetunits">
+                                    <label for="metric"></label>
+                                </div>
+                            </div>
+                            <div class="large-2 small-2 columns">
+                                Imperial
+                            </div>
+                            <div class="large-2 small-2 columns">
+                                <div class="switch small">
+                                    <input id="imperial" class="editorfield units" type="radio" data-units="imperial" name="widgetunits">
+                                    <label for="imperial"></label>
+                                </div>
+                            </div>
+                            <div class="large-2 small-2 columns">
+                                US
+                            </div>
+                            <div class="large-2 small-2 columns">
+                                <div class="switch small">
+                                    <input id="us" class="editorfield units" type="radio" data-units="us" name="widgetunits">
+                                    <label for="us"></label>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="row">
-                    <div class="large-12 columns">
-                        <label>
-                            <strong>Gauge Style</strong>
-                        </label>
-                    </div>
+                    </form>
                 </div>
-                <div class="row">
-                    <div class="large-3 small-3 columns">
-                        Digital
-                    </div>
-                    <div class="large-3 small-3 columns">
-                        <div class="switch small">
-                            <input id="styledigital" class="editorfield gaugestyle" type="radio" data-style="digital" checked name="widgetstyle">
-                            <label for="styledigital"></label>
-                        </div>
-                    </div>
-                    <div class="large-3 small-3 columns">
-                        Gauge
-                    </div>
-                    <div class="large-3 small-3 columns">
-                        <div class="switch small">
-                            <input id="stylegauge" class="editorfield gaugestyle"  type="radio" data-style="analog" name="widgetstyle">
-                            <label for="stylegauge"></label>
-                        </div>
-                    </div>
-                </div>
+                <div class="content" id="gauge">
 
-                <div class="row">
-                    <div class="large-12 columns">
-                        <label>
-                            <strong>Gauge Units</strong>
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="large-2 small-2 columns">
-                        Metric
-                    </div>
-                    <div class="large-2 small-2 columns">
-                        <div class="switch small">
-                            <input id="metric" class="editorfield units" type="radio" data-units="metric" checked name="widgetunits">
-                            <label for="metric"></label>
-                        </div>
-                    </div>
-                    <div class="large-2 small-2 columns">
-                        Imperial
-                    </div>
-                    <div class="large-2 small-2 columns">
-                        <div class="switch small">
-                            <input id="imperial" class="editorfield units" type="radio" data-units="imperial" name="widgetunits">
-                            <label for="imperial"></label>
-                        </div>
-                    </div>
-                    <div class="large-2 small-2 columns">
-                        US
-                    </div>
-                    <div class="large-2 small-2 columns">
-                        <div class="switch small">
-                            <input id="us" class="editorfield units" type="radio" data-units="us" name="widgetunits">
-                            <label for="us"></label>
-                        </div>
-                    </div>
-                </div>
 
-            </form>
 
+
+
+
+                    <form>
+                        <div class="row">
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Start Angle</strong>
+                                    <input type="text" class="editorfield" id="startangle" />
+                                </label>
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>End Angle</strong>
+                                    <input type="text" class="editorfield" id="endengle" />
+                                </label>
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Min Value</strong>
+                                    <input type="text" class="editorfield" id="min" />
+                                </label>
+                            </div>
+                            <div class="large-3 small-3 columns">
+                                <label>
+                                    <strong>Max Value</strong>
+                                    <input type="text" class="editorfield" id="max" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-4 small-4 columns">
+                                <label>
+                                    <strong>Major Unit</strong>
+                                    <input type="text" class="editorfield" id="majorunit" />
+                                </label>
+                            </div>
+                            <div class="large-4 small-4 columns">
+                                <label>
+                                    <strong>Major Tick Width</strong>
+                                    <input type="text" class="editorfield" id="majortickwidth" />
+                                </label>
+                            </div>
+                            <div class="large-4 small-4 columns">
+                                <label>
+                                    <strong>Major Tick Size</strong>
+                                    <input type="text" class="editorfield" id="maorticksize" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-4 small-4 columns">
+                                <label>
+                                    <strong>Minor Unit</strong>
+                                    <input type="text" class="editorfield" id="minorunit" />
+                                </label>
+                            </div>
+                            <div class="large-4 small-4 columns">
+                                <label>
+                                    <strong>Minor Tick Width</strong>
+                                    <input type="text" class="editorfield" id="minortickwidth" />
+                                </label>
+                            </div>
+                            <div class="large-4 small-4 columns">
+                                <label>
+                                    <strong>Minor Tick Size</strong>
+                                    <input type="text" class="editorfield" id="minorticksize" />
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+
+
+
+
+
+                        </div>
+                </div>
         </div>
 
         <div class="content" id="design">
-            <div class="large-8 columns">
-                <label>Grid</label>
+            <div class="row">
+                <div class="large-8 small-8 columns">
+                    <label>
+                        <select id="devices">
+                            <option value="ipad3">iPad</option>
+                            <option value="ipadpro">iPad Pro</option>
+                            <option value="ipadmini">iPad Mini</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="large-2 columns">
+                    <img src="/images/landscape.png" />
+                </div>
+                <div class="large-2 columns">
+                    <img src="/images/portrait.png" />
+                </div>
             </div>
-            <div class="large-4 columns">
-                <div class="row">
+            <div class="row">
+                <div class="large-8 columns">&nbsp;</div>
+                <div class="large-2 columns">
+                    <div class="switch">
+                        <input id="portrait" type="radio" name="orientation">
+                        <label for="portrait"></label>
+                    </div>
+                </div>
+                <div class="large-2 columns">
+                    <div class="switch">
+                        <input id="landscape" type="radio" name="orientation">
+                        <label for="landscape"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-8 columns">
+                    <label>Grid</label>
+                </div>
+                <div class="large-4 columns">
                     <div class="switch">
                         <input id="gridswitch" type="checkbox">
                         <label for="gridswitch"></label>

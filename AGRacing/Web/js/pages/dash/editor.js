@@ -39,6 +39,26 @@
     }
 
     function addListeners() {
+
+        jQuery('#rightmenu').on('click', '#gridswitch', function (e) {
+            updateGrid();
+        });
+
+        jQuery('#rightmenu').on('click', 'input[name=orientation]', function (e) {
+            var orientation = jQuery('input[name=orientation]:checked').attr('id');
+            var activeDashboard = AGRacingDashBoards.getActiveDashBoard();
+            activeDashboard.orientation = orientation;
+            updateDevice();
+        });
+
+        jQuery('#rightmenu').on('change', '#devices', function (e) {
+            var device = jQuery("#devices").val();
+            var activeDashboard = AGRacingDashBoards.getActiveDashBoard();
+            activeDashboard.device = device;
+            updateDevice();
+        });
+
+
         jQuery('#rightheader').on('click', '.editorcontrol', function (e) {
             var action = jQuery(this).attr('id');
 
@@ -349,6 +369,14 @@
                        .text(el));
             }
         });
+
+        var activeDashboard = AGRacingDashBoards.getActiveDashBoard();
+        var device = activeDashboard.device;
+        var orientation = activeDashboard.orientation;
+
+        jQuery("#devices option[value='" + device + "']").prop('selected', true);
+        jQuery('#' + orientation).prop('checked', true);
+
     }
 
     function setToolboxState(gameInfo) {
@@ -376,7 +404,6 @@
                 jQuery(id).addClass('disabled');
             }
         });
-
     }
 
     function startEditor() {
@@ -421,7 +448,7 @@
 
     function updateGrid() {
         if (jQuery('#gridswitch').is(":checked")) {
-            AGRacingUI.drawGrid(jQuery('#content'), 10);
+            AGRacingUI.drawGrid(jQuery('#content'), AGRacingUI.gridSize);
         } else {
             AGRacingUI.deleteGrid(jQuery('#content'));
         }
@@ -436,6 +463,53 @@
     function buildToolbar() {
         jQuery('#agtoolbar').draggable();
         jQuery('#agtoolbar').hide();
+    }
+
+    function updateDevice() {
+        var width = 0;
+        var height = 0;
+        var owidth = 0;
+        var oheight = 0;
+
+        jQuery('#device').remove();
+
+        var activeDashboard = AGRacingDashBoards.getActiveDashBoard();
+        var device = activeDashboard.device;
+        var orientation = activeDashboard.orientation;
+
+        switch (device) {
+            case 'ipad3':
+                width = 768;
+                height = 1024;
+                break;
+            case 'ipadpro':
+                width = 1024;
+                height = 1366;
+                break;
+            case 'ipadmini':
+                width = 768;
+                height = 1024;
+                break;
+        }
+
+        switch (orientation) {
+            case 'portrait':
+                owidth = width;
+                oheight = height;
+                break;
+            case 'landscape':
+                owidth = height;
+                oheight = width;
+                break;
+        }
+
+        var element = jQuery('<div>')
+            .css('pointer-events', 'none')
+            .css('width', owidth + 'px')
+            .css('height', oheight + 'px')
+            .css('border', '1px solid #ccc')
+            .attr('id', 'device');
+        jQuery('#dashpage').append(element);
     }
 
     return {

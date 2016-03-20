@@ -53,6 +53,7 @@
     <Compile Include="AGRacing.Designer.cs">
       <DependentUpon>AGRacing.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameData\Telemetry\Car\Chassis.cs" />
     <Compile Include="GameData\Telemetry\Sessions\SessionDrivers\Car.cs" />
     <Compile Include="GameData\Telemetry\Sessions\SessionDrivers\Cars.cs" />
     <Compile Include="GameData\Telemetry\XOldStuff\Connected.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="WebServer\Services\CarDataService.cs" />
     <Compile Include="WebServer\Services\ConnectedService.cs" />
     <Compile Include="WebServer\Services\DataHandler.cs" />
+    <Compile Include="WebServer\Services\FileService.cs" />
     <Compile Include="WebServer\Services\SessionDataService.cs" />
     <Compile Include="WebServer\Services\GameInfo.cs" />
     <Compile Include="WebServer\Services\RecordingService.cs" />
@@ -109,7 +111,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="Arduino\AGRacing\AGRacing.ino" />
+    <None Include="Hardware\Arduino\AGRacing\AGRacing.ino" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -347,10 +349,16 @@
     <Content Include="Web\images\fuel.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Web\images\landscape.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\images\move.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\images\open.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\images\portrait.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\images\resize.png">
@@ -368,6 +376,9 @@
     <Content Include="Web\images\up.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Web\images\userimages\dash.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\images\userimages\dashboard.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -378,6 +389,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\images\widgets\car.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\images\widgets\circle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\images\widgets\damage.png">
@@ -432,6 +446,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\images\widgets\light.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\images\widgets\line.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\images\widgets\percent.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\images\widgets\position.png">
@@ -1468,7 +1488,16 @@
     <Content Include="Web\js\widgets\carname.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Web\js\widgets\chassis\abs.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\chassis\brakebias.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\js\widgets\engine\oiltemp.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\js\widgets\engine\throttlemap.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web\js\widgets\engine\warnings\revlimiteractive.js">
@@ -2613,7 +2642,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Hardware\netmf\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\iRacingSdkWrapper\iRacingSdkWrapper\iRacingSdkWrapper.csproj">
       <Project>{d6db568b-35b3-49eb-8cb3-e4e5f1424247}</Project>

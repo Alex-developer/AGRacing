@@ -514,3 +514,12 @@ E:\Development\GitHub\AGRacing\AGRacing\obj\Debug\AGRacing.Properties.Resources.
 E:\Development\GitHub\AGRacing\AGRacing\obj\Debug\AGRacing.csproj.GenerateResource.Cache
 E:\Development\GitHub\AGRacing\AGRacing\obj\Debug\AGRacing.exe
 E:\Development\GitHub\AGRacing\AGRacing\obj\Debug\AGRacing.pdb
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\images\widgets\percent.png
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\chassis\brakebias.js
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\images\widgets\line.png
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\engine\throttlemap.js
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\images\widgets\circle.png
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\js\widgets\chassis\abs.js
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\images\userimages\dash.png
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\images\landscape.png
+E:\Development\GitHub\AGRacing\AGRacing\bin\Debug\Web\images\portrait.png

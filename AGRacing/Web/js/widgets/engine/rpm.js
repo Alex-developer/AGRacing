@@ -86,7 +86,7 @@
 
                 scale: {
                     startAngle: -60,
-                    endAngle: 180,
+                    endAngle: 120,
 
                     min: 0,
                     max: _maxRPM,
